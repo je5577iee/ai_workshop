@@ -463,10 +463,28 @@ async function loadWordList(file) {
   try {
     const res = await fetch(file, { cache: 'no-cache' });
     if (!res.ok) return [];
-    const buf = new Uint8Array(await res.arrayBuffer());
-    const enc = buf[0] === 0xFF && buf[1] === 0xFE ? 'utf-16le' : buf[0] === 0xFE && buf[1] === 0xFF ? 'utf-16be' : 'utf-8';
-    return new TextDecoder(enc).decode(buf).split(/\r?\n/).map(s => s.replace(/^\uFEFF/, '').trim()).filter(Boolean);
+    const text = decodeBest(new Uint8Array(await res.arrayBuffer()));
+    // 一行一個詞；如果一行裡還有分數等欄位，只取第一欄
+    return text.split(/\r?\n/)
+      .map(s => s.replace(/[\uFEFF\u200B-\u200D]/g, '').trim().split(/[\s,\t]+/)[0])
+      .filter(Boolean);
   } catch (e) { return []; }
+}
+/* 自動判斷檔案編碼：UTF-8、UTF-16、Big5（舊版繁體常見）、GB18030（簡體） */
+function decodeBest(buf) {
+  if (buf[0] === 0xFF && buf[1] === 0xFE) return new TextDecoder('utf-16le').decode(buf);
+  if (buf[0] === 0xFE && buf[1] === 0xFF) return new TextDecoder('utf-16be').decode(buf);
+  try { return new TextDecoder('utf-8', { fatal: true }).decode(buf); } catch (e) {} // 合法的 UTF-8 優先
+  let best = '', bestScore = -Infinity;
+  for (const enc of ['big5', 'utf-16le', 'gb18030']) {
+    let s; try { s = new TextDecoder(enc).decode(buf); } catch (e) { continue; }
+    const sample = s.slice(0, 20000);
+    const cjk = (sample.match(/[\u4E00-\u9FFF]/g) || []).length;
+    const bad = (sample.match(/[\uFFFD\uE000-\uF8FF]/g) || []).length;
+    const score = cjk - 20 * bad;
+    if (score > bestScore) { bestScore = score; best = s; }
+  }
+  return best;
 }
 async function loadNTUSD() {
   const [pos, neg] = await Promise.all([loadWordList(CONFIG.NTUSD_POS), loadWordList(CONFIG.NTUSD_NEG)]);
