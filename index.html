@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>文字讀心術 Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+:root {
+  --bg: #111214; --surface: #18191C; --surface-2: #1F2124; --line: #2A2C30;
+  --fg: #EDEBE6; --muted: #8A8D93; --lime: #BEDD6A; --ink: #111214; --coral: #EF7A5C; --neu: #8A8D93;
+  --font-body: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 64px;
+}
+[hidden] { display: none !important; }
+.wrap { max-width: 1120px; margin: 0 auto; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+p { margin: 0; }
+button, input, textarea, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 13px; font-weight: 700; letter-spacing: 0.12em; color: var(--lime); text-transform: uppercase; }
+.muted { color: var(--muted); }
+
+header.top {
+  position: sticky; top: 0; z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line);
+  margin-left: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); margin-right: calc(-1 * max(16px, env(safe-area-inset-right, 0px)));
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.top-inner { max-width: 1120px; margin: 0 auto; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; padding-block: 14px; }
+.brand { font-weight: 900; font-size: 18px; white-space: nowrap; }
+.brand span { color: var(--lime); }
+.tabs { display: flex; gap: 4px; overflow-x: auto; flex: 1; min-width: 0; scrollbar-width: none; }
+.tab { background: none; border: 1px solid transparent; cursor: pointer; padding: 8px 14px; white-space: nowrap; color: var(--muted); font-size: 15px; display: flex; align-items: baseline; gap: 8px; }
+.tab .n { font-family: var(--font-mono); font-size: 12px; }
+.tab:hover { color: var(--fg); }
+.tab[aria-selected="true"] { color: var(--ink); background: var(--lime); font-weight: 700; }
+
+.panel { padding-top: 40px; display: flex; flex-direction: column; gap: 32px; }
+.panel-head { display: flex; flex-direction: column; gap: 10px; max-width: 760px; }
+.panel-head h2 { font-size: clamp(32px, 5vw, 52px); font-weight: 900; line-height: 1.1; letter-spacing: -0.02em; }
+.panel-head p { color: var(--muted); font-size: 17px; }
+
+textarea, input[type=text] { width: 100%; background: var(--surface); border: 1px solid var(--line); padding: 14px 16px; resize: vertical; line-height: 1.6; }
+textarea:focus, input[type=text]:focus { border-color: var(--lime); outline: none; }
+.btn { cursor: pointer; border: 1px solid var(--lime); background: var(--lime); color: var(--ink); font-weight: 700; padding: 10px 20px; font-size: 15px; white-space: nowrap; }
+.btn:hover { filter: brightness(1.08); }
+.btn.ghost { background: none; color: var(--lime); }
+.btn:disabled { opacity: 0.35; cursor: not-allowed; filter: none; }
+.row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip { cursor: pointer; background: none; border: 1px solid var(--line); color: var(--fg); padding: 6px 12px; font-size: 14px; }
+.chip:hover { border-color: var(--lime); color: var(--lime); }
+.tag { font-family: var(--font-mono); font-weight: 700; font-size: 13px; padding: 3px 10px; display: inline-block; letter-spacing: 0.04em; }
+.tag.pos { background: var(--lime); color: var(--ink); }
+.tag.neg { background: var(--coral); color: var(--ink); }
+.tag.neu { border: 1px solid var(--neu); color: var(--neu); padding: 2px 9px; }
+.note { font-size: 14px; color: var(--muted); border-left: 2px solid var(--line); padding-left: 12px; }
+.status { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+.status.ok { color: var(--lime); } .status.warn { color: var(--coral); }
+
+.section { display: flex; flex-direction: column; gap: 16px; }
+.section > .label { display: flex; justify-content: space-between; align-items: center; gap: 12px; border-top: 1px solid var(--line); padding-top: 14px; flex-wrap: wrap; }
+.section > .label h3 { font-size: 18px; font-weight: 700; }
+
+/* LAB 1 */
+.judge { background: var(--surface); padding: 28px; display: flex; flex-direction: column; gap: 18px; }
+.judge-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.verdict { font-size: 44px; font-weight: 900; line-height: 1; }
+.verdict.pos { color: var(--lime); } .verdict.neg { color: var(--coral); } .verdict.neu { color: var(--neu); }
+.tokens { font-size: 26px; line-height: 2.2; overflow-wrap: anywhere; }
+.tok { padding: 2px 3px; }
+.tok.pos { color: var(--lime); border-bottom: 2px solid var(--lime); }
+.tok.neg { color: var(--coral); border-bottom: 2px solid var(--coral); }
+.tok sub { font-family: var(--font-mono); font-size: 12px; margin-left: 1px; }
+.score-line { font-family: var(--font-mono); font-size: 15px; color: var(--muted); }
+.truth { display: flex; flex-direction: column; gap: 12px; background: var(--surface-2); padding: 20px 24px; }
+.seg { display: flex; flex-wrap: wrap; }
+.seg button { cursor: pointer; background: none; border: 1px solid var(--line); padding: 8px 18px; color: var(--fg); }
+.seg button + button { border-left: none; }
+.seg button[aria-pressed="true"].pos { background: var(--lime); color: var(--ink); border-color: var(--lime); }
+.seg button[aria-pressed="true"].neu { background: var(--neu); color: var(--ink); border-color: var(--neu); }
+.seg button[aria-pressed="true"].neg { background: var(--coral); color: var(--ink); border-color: var(--coral); }
+.outcome { font-size: 17px; font-weight: 700; min-height: 1.6em; }
+.outcome.win { color: var(--lime); } .outcome.lose { color: var(--muted); font-weight: 400; }
+.board { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.board li { display: grid; grid-template-columns: 44px 1fr auto; gap: 16px; align-items: center; border-top: 1px solid var(--line); padding: 12px 0; }
+.board li:last-child { border-bottom: 1px solid var(--line); }
+.board .rank { font-family: var(--font-mono); font-size: 20px; font-weight: 700; color: var(--muted); }
+.board .sent { font-size: 17px; min-width: 0; overflow-wrap: anywhere; }
+.board .who { font-size: 13px; color: var(--muted); }
+.board .lbls { display: flex; gap: 6px; align-items: center; font-family: var(--font-mono); font-size: 12px; color: var(--muted); flex-wrap: wrap; justify-content: flex-end; }
+.board .empty { color: var(--muted); grid-template-columns: 1fr; }
+
+/* 投影模式：只顯示排行榜，字放大 */
+body.present header.top, body.present .hide-present { display: none !important; }
+body.present .panel { padding-top: 32px; }
+body.present .board .sent { font-size: clamp(22px, 2.6vw, 34px); }
+body.present .board .rank { font-size: 28px; }
+body.present .board li { padding: 18px 0; }
+
+/* LAB 2 */
+.mytopics { display: flex; gap: 8px; flex-wrap: wrap; }
+.mytopic { border: 1px solid var(--lime); color: var(--lime); padding: 4px 6px 4px 12px; font-size: 14px; display: flex; align-items: center; gap: 6px; }
+.mytopic button { background: none; border: none; color: var(--lime); cursor: pointer; padding: 0 4px; font-size: 16px; line-height: 1; }
+.tbl-wrap { overflow-x: auto; }
+table.reviews { width: 100%; border-collapse: collapse; min-width: 640px; }
+.reviews th { text-align: left; font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 0.08em; padding: 10px 12px; border-bottom: 1px solid var(--fg); }
+.reviews td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.reviews td.num { font-family: var(--font-mono); color: var(--muted); font-size: 13px; width: 40px; }
+.reviews select { background: var(--surface); border: 1px solid var(--line); padding: 6px 8px; width: 100%; min-width: 120px; }
+.reviews td.ai { width: 150px; }
+.reviews .hiddenai { color: var(--line); font-family: var(--font-mono); font-size: 13px; }
+.reviews tr.same td.ai { color: var(--lime); }
+.reviews tr.diff td.ai { color: var(--coral); }
+.tally { display: flex; flex-wrap: wrap; gap: 28px; }
+.tally div { display: flex; flex-direction: column; }
+.tally .big { font-family: var(--font-mono); font-size: 32px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* LAB 3 */
+.steps { display: flex; flex-direction: column; }
+.step { display: grid; grid-template-columns: 72px 1fr; gap: 24px; border-top: 1px solid var(--line); padding: 28px 0; }
+.step .sn { font-family: var(--font-mono); font-size: 36px; font-weight: 700; color: var(--lime); line-height: 1; }
+.step-body { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.step-body h3 { font-size: 22px; font-weight: 700; }
+.checks { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px 24px; }
+.checks label { display: flex; gap: 10px; align-items: center; cursor: pointer; }
+.checks input { accent-color: var(--lime); width: 18px; height: 18px; }
+.preview { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.preview pre { margin: 0; background: var(--surface); padding: 14px 16px; font-family: var(--font-body); font-size: 14px; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 220px; overflow: auto; }
+.preview .cap { font-family: var(--font-mono); font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.bars { display: flex; flex-direction: column; gap: 14px; }
+.bar-row { display: grid; grid-template-columns: 64px 1fr 92px; gap: 14px; align-items: center; }
+.bar-row .bl { font-size: 15px; font-weight: 700; }
+.bar-track { height: 28px; background: var(--surface); }
+.bar-fill { height: 100%; transition: width 0.5s ease; }
+.bar-fill.pos { background: var(--lime); } .bar-fill.neu { background: var(--neu); } .bar-fill.neg { background: var(--coral); }
+.bar-row .bv { font-family: var(--font-mono); font-size: 14px; text-align: right; font-variant-numeric: tabular-nums; }
+table.topics { width: 100%; border-collapse: collapse; }
+.topics th { text-align: left; font-family: var(--font-mono); font-size: 12px; color: var(--muted); padding: 8px 10px; border-bottom: 1px solid var(--fg); }
+.topics td { padding: 10px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+.topics td.n { font-family: var(--font-mono); }
+.topics tr.top td { color: var(--coral); font-weight: 700; }
+.insight-fill { font-size: 20px; line-height: 2.2; }
+.insight-fill input { display: inline-block; width: auto; min-width: 200px; max-width: 100%; padding: 4px 10px; border-width: 0 0 2px; border-color: var(--lime); background: var(--surface); }
+
+/* FEEDBACK */
+.fb { display: flex; flex-direction: column; gap: 28px; max-width: 760px; }
+.fb label.q { font-weight: 700; font-size: 18px; display: block; margin-bottom: 10px; }
+.stars { display: flex; gap: 8px; flex-wrap: wrap; }
+.stars button { cursor: pointer; width: 56px; height: 48px; background: none; border: 1px solid var(--line); font-family: var(--font-mono); font-size: 18px; font-weight: 700; }
+.stars button[aria-pressed="true"] { background: var(--lime); color: var(--ink); border-color: var(--lime); }
+.stars-cap { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); max-width: 312px; margin-top: 6px; }
+.err { color: var(--coral); font-size: 14px; }
+.done { background: var(--surface); padding: 32px; display: flex; flex-direction: column; gap: 8px; }
+.done p:first-child { font-size: 28px; font-weight: 900; color: var(--lime); }
+
+@media (max-width: 560px) {
+  .step { grid-template-columns: 1fr; gap: 12px; }
+  .bar-row { grid-template-columns: 48px 1fr 76px; }
+  .board li { grid-template-columns: 32px 1fr; }
+  .board .lbls { grid-column: 2; justify-content: flex-start; }
+  .verdict { font-size: 34px; }
+}
+@media (prefers-reduced-motion: reduce) { .bar-fill { transition: none; } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">文字<span>讀心術</span> Lab</div>
+    <nav class="tabs" role="tablist" aria-label="上機分頁">
+      <button class="tab" role="tab" id="tab-lab1" aria-controls="lab1" data-target="lab1"><span class="n">01</span>騙過字典</button>
+      <button class="tab" role="tab" id="tab-lab2" aria-controls="lab2" data-target="lab2"><span class="n">02</span>主題分類</button>
+      <button class="tab" role="tab" id="tab-lab3" aria-controls="lab3" data-target="lab3"><span class="n">03</span>完整流程</button>
+      <button class="tab" role="tab" id="tab-feedback" aria-controls="feedback" data-target="feedback"><span class="n">04</span>回饋</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ===================== LAB 1 ===================== -->
+<section class="panel" id="lab1" role="tabpanel" aria-labelledby="tab-lab1">
+  <div class="panel-head hide-present">
+    <p class="eyebrow">Lab 01 · 25 min</p>
+    <h2>騙過字典</h2>
+    <p>寫一句評論，讓字典判錯。字典判錯、你選的答案才是對的，就能送上全班排行榜。</p>
+  </div>
+
+  <div class="section hide-present">
+    <textarea id="l1-input" rows="2" maxlength="60" aria-label="輸入評論">推！推薦給我討厭的人。</textarea>
+    <div class="row">
+      <button class="btn" id="l1-run">讓字典判斷</button>
+      <span class="muted" style="font-size:14px">提示：</span>
+      <div class="chips">
+        <span class="chip" style="cursor:default">反諷</span><span class="chip" style="cursor:default">否定句</span>
+        <span class="chip" style="cursor:default">網路用語</span><span class="chip" style="cursor:default">表情符號</span>
+        <span class="chip" style="cursor:default">先誇後罵</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="judge hide-present">
+    <div class="judge-head"><p class="eyebrow" style="color:var(--muted)">字典的判斷</p><span class="status" id="l1-dictname">示範字典 · 約 40 個詞</span></div>
+    <p class="verdict" id="l1-verdict">—</p>
+    <div class="tokens" id="l1-tokens"></div>
+    <p class="score-line" id="l1-score"></p>
+    <p class="note" style="margin-top:12px">字典法：每個詞查表給分（正面 +1、負面 −1），全部加總決定結果。<span id="l1-dictnote">這裡用的是教學用的簡化字典，實務上常用 NTUSD（台大情緒詞典）等正式詞典。</span></p>
+  </div>
+
+  <div class="truth hide-present">
+    <p style="font-weight:700">你覺得這句話的正確答案是？</p>
+    <div class="seg" id="l1-truth">
+      <button class="pos" data-v="pos" aria-pressed="false">正面</button>
+      <button class="neu" data-v="neu" aria-pressed="false">中性</button>
+      <button class="neg" data-v="neg" aria-pressed="false">負面</button>
+    </div>
+    <p class="outcome" id="l1-outcome"></p>
+    <div class="row">
+      <input type="text" id="l1-name" maxlength="12" placeholder="暱稱（上榜用，可不填）" style="max-width:260px">
+      <button class="btn" id="l1-submit" disabled>送上排行榜</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="label">
+      <h3>排行榜：成功騙過字典的句子</h3>
+      <div class="row"><span class="status" id="l1-board-status"></span><button class="btn ghost" id="l1-present">投影模式</button></div>
+    </div>
+    <ol class="board" id="l1-board"></ol>
+  </div>
+</section>
+
+<!-- ===================== LAB 2 ===================== -->
+<section class="panel" id="lab2" role="tabpanel" aria-labelledby="tab-lab2" hidden>
+  <div class="panel-head">
+    <p class="eyebrow">Lab 02 · 15 min</p>
+    <h2>你和 AI，誰分得好？</h2>
+    <p>先訂出你的主題，把 20 則評論分類；全部分完之後，再揭曉 AI 的分法。</p>
+  </div>
+
+  <div class="section">
+    <div class="label"><h3>01　訂出你的主題</h3><span class="muted" style="font-size:14px">建議 3–5 個</span></div>
+    <div class="row">
+      <input type="text" id="l2-topic-input" maxlength="10" placeholder="例如：價格" style="max-width:280px">
+      <button class="btn ghost" id="l2-topic-add">新增主題</button>
+    </div>
+    <div class="mytopics" id="l2-topics"></div>
+  </div>
+
+  <div class="section">
+    <div class="label"><h3>02　逐則分類</h3><span class="muted" style="font-size:14px">示範資料：虛構的拉麵店評論</span></div>
+    <div class="tbl-wrap">
+      <table class="reviews">
+        <thead><tr><th>#</th><th>評論</th><th>你的分類</th><th>AI 分類</th></tr></thead>
+        <tbody id="l2-rows"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="label"><h3>03　比一比</h3><button class="btn" id="l2-reveal">揭曉 AI 的分法</button></div>
+    <div class="tally" id="l2-tally"></div>
+    <p class="note" id="l2-note">AI 的結果已經事先跑好（由 Claude 分析）。分完之後按「揭曉」，跟你一樣的會變綠色，不一樣的會變橘色。</p>
+  </div>
+</section>
+
+<!-- ===================== LAB 3 ===================== -->
+<section class="panel" id="lab3" role="tabpanel" aria-labelledby="tab-lab3" hidden>
+  <div class="panel-head">
+    <p class="eyebrow">Lab 03 · 20 min · 小組實戰</p>
+    <h2>從問題到洞察</h2>
+    <p>照著五個步驟走一次，最後用一句話報告你們的發現。</p>
+  </div>
+
+  <div class="steps">
+    <div class="step"><p class="sn">01</p><div class="step-body">
+      <h3>界定問題</h3>
+      <p class="muted">好問題 = 對象 + 時間 + 面向</p>
+      <input type="text" id="l3-q" value="這間拉麵店的負評，主要在抱怨什麼？">
+    </div></div>
+
+    <div class="step"><p class="sn">02</p><div class="step-body">
+      <h3>看資料</h3>
+      <p class="muted" id="l3-data-desc"></p>
+      <textarea id="l3-data" rows="7"></textarea>
+    </div></div>
+
+    <div class="step"><p class="sn">03</p><div class="step-body">
+      <h3>資料清理</h3>
+      <div class="checks">
+        <label><input type="checkbox" id="c-url" checked>移除網址</label>
+        <label><input type="checkbox" id="c-tag" checked>移除 #標籤</label>
+        <label><input type="checkbox" id="c-rep" checked>壓縮重複字（～～～）</label>
+        <label><input type="checkbox" id="c-emoji">移除表情符號</label>
+        <label><input type="checkbox" id="c-dup" checked>刪除重複評論</label>
+        <label><input type="checkbox" id="c-short" checked>刪除少於 3 個字的評論</label>
+      </div>
+      <div class="preview">
+        <div><p class="cap" id="l3-before-cap">清理前</p><pre id="l3-before"></pre></div>
+        <div><p class="cap" id="l3-after-cap">清理後</p><pre id="l3-after"></pre></div>
+      </div>
+    </div></div>
+
+    <div class="step"><p class="sn">04</p><div class="step-body">
+      <h3>情感 ＋ 主題分析</h3>
+      <div class="row"><button class="btn" id="l3-run">開始分析</button><span class="status">AI 結果已事先跑好</span></div>
+      <div id="l3-results" hidden>
+        <div class="section">
+          <p class="eyebrow" style="color:var(--muted)">情感分布</p>
+          <div class="bars" id="l3-bars"></div>
+        </div>
+        <div class="section" style="margin-top:28px">
+          <p class="eyebrow" style="color:var(--muted)">主題 × 負評</p>
+          <div class="tbl-wrap"><table class="topics"><thead><tr><th>主題</th><th>則數</th><th>負評</th><th>負評比例</th></tr></thead><tbody id="l3-topics"></tbody></table></div>
+        </div>
+      </div>
+    </div></div>
+
+    <div class="step"><p class="sn">05</p><div class="step-body">
+      <h3>提供洞察</h3>
+      <p class="insight-fill">我們發現 <input type="text" id="l3-i1" placeholder="等待時間的負評最多">，<br>所以建議 <input type="text" id="l3-i2" placeholder="尖峰時段開放線上取號">。</p>
+    </div></div>
+  </div>
+</section>
+
+<!-- ===================== FEEDBACK ===================== -->
+<section class="panel" id="feedback" role="tabpanel" aria-labelledby="tab-feedback" hidden>
+  <div class="panel-head">
+    <p class="eyebrow">Feedback · 5 min</p>
+    <h2>給我一點回饋</h2>
+    <p>匿名填寫，只有講者看得到。寫得越真實越好。</p>
+  </div>
+
+  <form class="fb" id="fb-form" novalidate>
+    <div>
+      <label class="q" id="fb-rating-label">整體來說，今天的工作坊你給幾分？</label>
+      <div class="stars" id="fb-rating" role="group" aria-labelledby="fb-rating-label">
+        <button type="button" data-v="1" aria-pressed="false">1</button>
+        <button type="button" data-v="2" aria-pressed="false">2</button>
+        <button type="button" data-v="3" aria-pressed="false">3</button>
+        <button type="button" data-v="4" aria-pressed="false">4</button>
+        <button type="button" data-v="5" aria-pressed="false">5</button>
+      </div>
+      <div class="stars-cap"><span>不太好</span><span>非常好</span></div>
+    </div>
+    <div>
+      <label class="q" for="fb-gain">今天最有收穫、或最好玩的是什麼？</label>
+      <textarea id="fb-gain" rows="3" maxlength="500"></textarea>
+    </div>
+    <div>
+      <label class="q" for="fb-more">還想學什麼？有什麼建議？</label>
+      <textarea id="fb-more" rows="3" maxlength="500"></textarea>
+    </div>
+    <p class="err" id="fb-err" role="alert"></p>
+    <div class="row"><button class="btn" type="submit" id="fb-submit">送出回饋</button></div>
+  </form>
+  <div class="done" id="fb-done" hidden><p>收到了，謝謝你！</p><p class="muted">你的回饋已經送出。</p></div>
+</section>
+
+</main>
+
+<script>
+/* =====================================================
+   設定：二選一，填好其中一種後端就好（兩種都填，優先用 Supabase）
+   ===================================================== */
+const CONFIG = {
+  // 方案 A：Google Apps Script 網址
+  API_URL: '',              // 例如 'https://script.google.com/macros/s/xxxx/exec'
+
+  // 方案 B：Supabase（Project URL 與 Publishable / anon key）
+  SUPABASE_URL: '',         // 例如 'https://abcdefgh.supabase.co'
+  SUPABASE_KEY: '',         // 例如 'sb_publishable_xxxx'（這把是公開用的，可以放在網頁裡）
+
+  BOARD_REFRESH_MS: 8000,   // 排行榜幾毫秒更新一次
+
+  // NTUSD 情緒詞典（選用）：把兩個檔案放在跟 index.html 同一個資料夾就會自動載入
+  // 找不到檔案就只用下面的示範字典。不想用時，把兩個檔名改成 '' 即可。
+  NTUSD_POS: 'ntusd-positive.txt',
+  NTUSD_NEG: 'ntusd-negative.txt'
+};
+const BACKEND = (CONFIG.SUPABASE_URL && CONFIG.SUPABASE_KEY) ? 'supabase' : (CONFIG.API_URL ? 'google' : '');
+
+/* ===== 示範字典（可替換成 NTUSD / CVAW） ===== */
+const LEXICON = {
+  '好吃': 1, '好喝': 1, '美味': 1, '好棒棒': 1, '棒': 1, '讚': 1, '推薦': 1, '推': 1,
+  '喜歡': 1, '親切': 1, '熱情': 1, '便宜': 1, '佛心': 1, '特色': 1, '努力': 1,
+  '超好': 1, '好': 1, '笑': 1, '愛': 1, '滿意': 1, '再來': 1, '有個性': 1,
+  '難吃': -1, '差': -1, '貴': -1, '慢': -1, '冷': -1, '爛': -1, '雷': -1, '失望': -1,
+  '討厭': -1, '髒': -1, '久': -1, '鹹': -1, '不理': -1, '糟': -1, '無聊': -1
+};
+let WORDS = Object.keys(LEXICON).sort((a, b) => b.length - a.length);
+
+/* 載入 NTUSD：一行一個詞，支援 UTF-8 與 UTF-16。示範字典裡已有的詞以示範字典為準 */
+async function loadWordList(file) {
+  if (!file) return [];
+  try {
+    const res = await fetch(file, { cache: 'no-cache' });
+    if (!res.ok) return [];
+    const buf = new Uint8Array(await res.arrayBuffer());
+    const enc = buf[0] === 0xFF && buf[1] === 0xFE ? 'utf-16le' : buf[0] === 0xFE && buf[1] === 0xFF ? 'utf-16be' : 'utf-8';
+    return new TextDecoder(enc).decode(buf).split(/\r?\n/).map(s => s.replace(/^\uFEFF/, '').trim()).filter(Boolean);
+  } catch (e) { return []; }
+}
+async function loadNTUSD() {
+  const [pos, neg] = await Promise.all([loadWordList(CONFIG.NTUSD_POS), loadWordList(CONFIG.NTUSD_NEG)]);
+  if (!pos.length && !neg.length) return;
+  const negSet = new Set(neg);
+  let added = 0;
+  pos.forEach(w => { if (!negSet.has(w) && !(w in LEXICON)) { LEXICON[w] = 1; added++; } });
+  const posSet = new Set(pos);
+  neg.forEach(w => { if (!posSet.has(w) && !(w in LEXICON)) { LEXICON[w] = -1; added++; } });
+  WORDS = Object.keys(LEXICON).sort((a, b) => b.length - a.length);
+  const nameEl = document.getElementById('l1-dictname');
+  if (nameEl) nameEl.textContent = `NTUSD ＋ 示範字典 · ${WORDS.length.toLocaleString()} 個詞`;
+  const noteEl = document.getElementById('l1-dictnote');
+  if (noteEl) noteEl.textContent = '這裡用的是 NTUSD（台大情緒詞典，© 2022 NTU NLPLab，MIT License），再加上幾個示範用的詞。';
+}
+loadNTUSD();
+function analyzeDict(text) {
+  const parts = []; let score = 0, i = 0, buf = '';
+  while (i < text.length) {
+    const w = WORDS.find(w => text.startsWith(w, i));
+    if (w) { if (buf) { parts.push({ t: buf }); buf = ''; } parts.push({ t: w, s: LEXICON[w] }); score += LEXICON[w]; i += w.length; }
+    else { buf += text[i]; i++; }
+  }
+  if (buf) parts.push({ t: buf });
+  return { parts, score, label: score > 0 ? 'pos' : score < 0 ? 'neg' : 'neu' };
+}
+
+const LABEL = { pos: '正面', neu: '中性', neg: '負面' };
+const TAG = { pos: 'POS', neu: 'NEU', neg: 'NEG' };
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const $ = id => document.getElementById(id);
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+};
+
+/* ===== 後端呼叫（Google / Supabase 共用同一組介面） ===== */
+function sbHeaders(extra) {
+  const h = { apikey: CONFIG.SUPABASE_KEY, 'Content-Type': 'application/json', ...extra };
+  if (!CONFIG.SUPABASE_KEY.startsWith('sb_')) h.Authorization = 'Bearer ' + CONFIG.SUPABASE_KEY; // 舊版 anon key
+  return h;
+}
+const sbBase = () => CONFIG.SUPABASE_URL.replace(/\/+$/, '') + '/rest/v1/';
+
+async function apiPost(payload) {
+  if (BACKEND === 'supabase') {
+    const { type, ...row } = payload;
+    if (type !== 'board' && type !== 'feedback') throw new Error('unknown-type');
+    const res = await fetch(sbBase() + type, { method: 'POST', headers: sbHeaders({ Prefer: 'return=minimal' }), body: JSON.stringify(row) });
+    if (res.status === 409) return { ok: true, duplicate: true };   // 同一句已經有人送過
+    if (!res.ok) throw new Error('supabase-' + res.status);
+    return { ok: true };
+  }
+  if (BACKEND === 'google') {
+    const res = await fetch(CONFIG.API_URL, { method: 'POST', body: JSON.stringify(payload) }); // text/plain，避免 CORS 預檢
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'failed');
+    return data;
+  }
+  throw new Error('no-backend');
+}
+async function apiGetBoard() {
+  if (BACKEND === 'supabase') {
+    const q = 'board?select=sentence,dict,truth,name&hidden=eq.false&order=created_at.desc&limit=50';
+    const res = await fetch(sbBase() + q, { headers: sbHeaders() });
+    if (!res.ok) throw new Error('supabase-' + res.status);
+    return await res.json();
+  }
+  if (BACKEND === 'google') {
+    const res = await fetch(CONFIG.API_URL + '?type=board&t=' + Date.now());
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'failed');
+    return data.items;
+  }
+  throw new Error('no-backend');
+}
+
+/* ===== Tabs ===== */
+const TABS = ['lab1', 'lab2', 'lab3', 'feedback'];
+function showTab(id) {
+  if (!TABS.includes(id)) id = 'lab1';
+  document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', String(b.dataset.target === id)));
+  TABS.forEach(t => { $(t).hidden = t !== id; });
+}
+document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => {
+  showTab(b.dataset.target);
+  try { history.replaceState(null, '', '#' + b.dataset.target); } catch (e) {}
+  window.scrollTo({ top: 0 });
+}));
+showTab((location.hash || '').slice(1));
+
+/* ===================== LAB 1 ===================== */
+let l1 = { text: '', dict: null, truth: null };
+let board = [];
+let lastSubmit = 0;
+
+function runLab1() {
+  const text = $('l1-input').value.trim();
+  if (!text) return;
+  const r = analyzeDict(text);
+  l1 = { text, dict: r, truth: null };
+  $('l1-tokens').innerHTML = r.parts.map(p => p.s
+    ? `<span class="tok ${p.s > 0 ? 'pos' : 'neg'}">${esc(p.t)}<sub>${p.s > 0 ? '+1' : '−1'}</sub></span>` : esc(p.t)).join('');
+  const v = $('l1-verdict'); v.className = 'verdict ' + r.label; v.textContent = LABEL[r.label];
+  $('l1-score').textContent = `總分 ${r.score > 0 ? '+' : ''}${r.score} → ${LABEL[r.label]}`;
+  document.querySelectorAll('#l1-truth button').forEach(b => b.setAttribute('aria-pressed', 'false'));
+  $('l1-outcome').textContent = ''; $('l1-outcome').className = 'outcome';
+  $('l1-submit').disabled = true;
+}
+$('l1-run').addEventListener('click', runLab1);
+$('l1-input').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); runLab1(); } });
+
+document.querySelectorAll('#l1-truth button').forEach(b => b.addEventListener('click', () => {
+  if (!l1.dict || l1.text !== $('l1-input').value.trim()) runLab1();
+  if (!l1.dict) return;
+  document.querySelectorAll('#l1-truth button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  l1.truth = b.dataset.v;
+  const out = $('l1-outcome');
+  if (l1.dict.label !== l1.truth) {
+    out.className = 'outcome win'; out.textContent = `字典判成「${LABEL[l1.dict.label]}」，你騙過字典了！`;
+    $('l1-submit').disabled = false;
+  } else {
+    out.className = 'outcome lose'; out.textContent = '字典這次判對了，換一句試試。';
+    $('l1-submit').disabled = true;
+  }
+}));
+
+function renderBoard() {
+  if (!board.length) { $('l1-board').innerHTML = '<li class="empty">還沒有人上榜，搶第一個！</li>'; return; }
+  $('l1-board').innerHTML = board.map((r, i) => `
+    <li><span class="rank">${String(i + 1).padStart(2, '0')}</span>
+      <div><p class="sent">${esc(r.sentence)}</p><p class="who">${esc(r.name || '匿名')}</p></div>
+      <div class="lbls">字典 <span class="tag ${r.dict}">${TAG[r.dict] || '?'}</span> 答案 <span class="tag ${r.truth}">${TAG[r.truth] || '?'}</span></div>
+    </li>`).join('');
+}
+async function refreshBoard() {
+  if (!BACKEND) {
+    board = store.get('lab-board-local', []);
+    $('l1-board-status').textContent = '尚未連接後端：排行榜只存在這台電腦';
+    $('l1-board-status').className = 'status warn';
+    renderBoard(); return;
+  }
+  try {
+    board = await apiGetBoard();
+    $('l1-board-status').textContent = `全班共 ${board.length} 句 · 自動更新`;
+    $('l1-board-status').className = 'status ok';
+    renderBoard();
+  } catch (e) {
+    $('l1-board-status').textContent = '排行榜暫時連不上，稍後自動重試';
+    $('l1-board-status').className = 'status warn';
+  }
+}
+$('l1-submit').addEventListener('click', async () => {
+  if (!l1.dict || !l1.truth) return;
+  const wait = 10000 - (Date.now() - lastSubmit);
+  if (wait > 0) { $('l1-outcome').textContent = `太快了，${Math.ceil(wait / 1000)} 秒後再送。`; return; }
+  const item = { sentence: l1.text.slice(0, 60), dict: l1.dict.label, truth: l1.truth, name: $('l1-name').value.trim().slice(0, 12) };
+  $('l1-submit').disabled = true;
+  lastSubmit = Date.now();
+  if (!BACKEND) {
+    const local = store.get('lab-board-local', []);
+    if (!local.some(r => r.sentence === item.sentence)) { local.unshift(item); store.set('lab-board-local', local); }
+    $('l1-outcome').textContent = '已送上排行榜（目前只存在這台電腦）。';
+    refreshBoard(); return;
+  }
+  try {
+    const r = await apiPost({ type: 'board', ...item });
+    $('l1-outcome').textContent = r.duplicate ? '這句已經有人送過了，換一句吧！' : '已送上排行榜！';
+    refreshBoard();
+  } catch (e) {
+    $('l1-outcome').textContent = '送出失敗，請再按一次。';
+    $('l1-submit').disabled = false; lastSubmit = 0;
+  }
+});
+$('l1-present').addEventListener('click', () => {
+  const on = document.body.classList.toggle('present');
+  $('l1-present').textContent = on ? '離開投影模式' : '投影模式';
+  if (on) showTab('lab1');
+});
+runLab1();
+refreshBoard();
+setInterval(() => { if (!$('lab1').hidden) refreshBoard(); }, CONFIG.BOARD_REFRESH_MS);
+
+/* ===================== LAB 2 ===================== */
+/* AI 結果：事先由 Claude 分析，主題由 AI 自行歸納 */
+const L2 = [
+  ['湯頭很濃，麵條Q彈', '餐點口味'], ['排隊排了一個多小時', '等待時間'], ['老闆很熱情，會主動介紹', '服務態度'],
+  ['一碗兩百多，有點貴', '價格'], ['上菜超慢，等到肚子餓扁', '等待時間'], ['叉燒軟嫩入口即化', '餐點口味'],
+  ['店裡很擠，座位很小', '用餐環境'], ['店員態度冷淡，問問題愛理不理', '服務態度'], ['溏心蛋煮得剛好', '餐點口味'],
+  ['CP 值普通，份量偏少', '價格'], ['週末人潮多，建議平日來', '等待時間'], ['湯太鹹了，喝完一直想喝水', '餐點口味'],
+  ['環境乾淨，餐具也很整齊', '用餐環境'], ['加麵免費，很佛心', '價格'], ['外帶要等 40 分鐘', '等待時間'],
+  ['店員很有禮貌', '服務態度'], ['麵有點太硬', '餐點口味'], ['價格合理，以台北來說不算貴', '價格'],
+  ['冷氣不太涼，吃得滿身汗', '用餐環境'], ['結帳的時候算錯錢', '服務態度']
+];
+let l2Topics = [];
+let l2Picks = L2.map(() => '');
+let l2Revealed = false;
+
+function renderTopics() {
+  $('l2-topics').innerHTML = l2Topics.length ? l2Topics.map((t, i) =>
+    `<span class="mytopic">${esc(t)}<button type="button" aria-label="刪除 ${esc(t)}" data-i="${i}">×</button></span>`).join('')
+    : '<span class="muted" style="font-size:14px">還沒有主題，先新增幾個吧。</span>';
+  $('l2-topics').querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+    const removed = l2Topics[+b.dataset.i];
+    l2Topics.splice(+b.dataset.i, 1);
+    l2Picks = l2Picks.map(p => p === removed ? '' : p);
+    renderTopics(); renderRows();
+  }));
+}
+function renderRows() {
+  const opts = ['<option value="">— 選擇 —</option>', ...l2Topics.map(t => `<option>${esc(t)}</option>`), '<option>其他</option>'].join('');
+  $('l2-rows').innerHTML = L2.map(([r, ai], i) => {
+    const cls = l2Revealed && l2Picks[i] ? (l2Picks[i] === ai ? 'same' : 'diff') : '';
+    return `<tr class="${cls}"><td class="num">${String(i + 1).padStart(2, '0')}</td><td>${esc(r)}</td>
+      <td><select data-i="${i}" aria-label="第 ${i + 1} 則的分類">${opts}</select></td>
+      <td class="ai">${l2Revealed ? esc(ai) : '<span class="hiddenai">？？？</span>'}</td></tr>`;
+  }).join('');
+  $('l2-rows').querySelectorAll('select').forEach(s => {
+    s.value = l2Picks[+s.dataset.i] || '';
+    s.addEventListener('change', () => { l2Picks[+s.dataset.i] = s.value; renderRows(); });
+  });
+  renderTally();
+}
+function renderTally() {
+  const done = l2Picks.filter(Boolean).length;
+  const items = [`<div><span class="big">${done}/${L2.length}</span><span class="muted">已分類</span></div>`];
+  if (l2Revealed) {
+    const same = L2.filter(([, ai], i) => l2Picks[i] === ai).length;
+    const aiTopics = [...new Set(L2.map(([, ai]) => ai))];
+    items.push(`<div><span class="big" style="color:var(--lime)">${same}</span><span class="muted">跟 AI 一樣</span></div>`);
+    items.push(`<div><span class="big">${aiTopics.length}</span><span class="muted">AI 的主題：${aiTopics.map(esc).join('、')}</span></div>`);
+  }
+  $('l2-tally').innerHTML = items.join('');
+}
+function addTopic() {
+  const v = $('l2-topic-input').value.trim();
+  if (!v || l2Topics.includes(v) || l2Topics.length >= 8) return;
+  l2Topics.push(v); $('l2-topic-input').value = ''; renderTopics(); renderRows();
+}
+$('l2-topic-add').addEventListener('click', addTopic);
+$('l2-topic-input').addEventListener('keydown', e => { if (e.key === 'Enter') addTopic(); });
+$('l2-reveal').addEventListener('click', () => {
+  l2Revealed = !l2Revealed;
+  $('l2-reveal').textContent = l2Revealed ? '隱藏 AI 的分法' : '揭曉 AI 的分法';
+  $('l2-note').textContent = l2Revealed
+    ? 'AI 自己歸納出 5 個主題。綠色是你們分得一樣的，橘色是不一樣的。主題名稱不同的，就看意思是不是相同。'
+    : 'AI 的結果已經事先跑好（由 Claude 分析）。分完之後按「揭曉」，跟你一樣的會變綠色，不一樣的會變橘色。';
+  renderRows();
+});
+renderTopics(); renderRows();
+
+/* ===================== LAB 3 ===================== */
+/* 範例資料與 AI 結果（事先由 Claude 分析）。換成你的資料時，整段替換。
+   每筆：[原始評論, AI 主題, AI 情感 pos/neu/neg] */
+const L3 = {
+  desc: '範例資料：12 則虛構的拉麵店評論。',
+  rows: [
+    ['‼️超好吃der～～～ 推推推 https://bit.ly/abc #美食 #台北', '餐點口味', 'pos'],
+    ['排隊排了一個多小時，真是好棒棒', '等待時間', 'neg'],
+    ['湯頭很濃，麵條Q彈 😋', '餐點口味', 'pos'],
+    ['上菜超慢', '等待時間', 'neg'],
+    ['上菜超慢', '等待時間', 'neg'],
+    ['一碗兩百多，有點貴', '價格', 'neg'],
+    ['老闆很熱情 #拉麵', '服務態度', 'pos'],
+    ['讚', '其他', 'pos'],
+    ['店員態度很差，結帳還算錯錢', '服務態度', 'neg'],
+    ['叉燒好吃，下次還會再來', '餐點口味', 'pos'],
+    ['外帶要等 40 分鐘，很失望 https://maps.app/xyz', '等待時間', 'neg'],
+    ['環境乾淨，價格合理', '用餐環境', 'pos']
+  ]
+};
+$('l3-data-desc').textContent = L3.desc;
+$('l3-data').value = L3.rows.map(r => r[0]).join('\n');
+const AI3 = new Map(L3.rows.map(r => [r[0].trim(), { topic: r[1], sent: r[2] }]));
+
+function cleanText(l) {
+  if ($('c-url').checked) l = l.replace(/https?:\/\/\S+/g, '');
+  if ($('c-tag').checked) l = l.replace(/#\S+/g, '');
+  if ($('c-emoji').checked) l = l.replace(/[\p{Extended_Pictographic}\u{FE0F}]/gu, '');
+  if ($('c-rep').checked) l = l.replace(/(.)\1{2,}/gu, '$1');
+  return l.replace(/\s+/g, ' ').trim();
+}
+function cleanRows() {
+  let rows = $('l3-data').value.split(/\r?\n/).map(l => l.trim()).filter(Boolean).map(raw => ({ raw, text: cleanText(raw) }));
+  if ($('c-short').checked) rows = rows.filter(r => [...r.text.replace(/\s/g, '')].length >= 3);
+  if ($('c-dup').checked) { const seen = new Set(); rows = rows.filter(r => !seen.has(r.text) && seen.add(r.text)); }
+  return rows;
+}
+function renderClean() {
+  const raw = $('l3-data').value.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  const rows = cleanRows();
+  $('l3-before-cap').textContent = `清理前 · ${raw.length} 則`;
+  $('l3-after-cap').textContent = `清理後 · ${rows.length} 則`;
+  $('l3-before').textContent = raw.join('\n');
+  $('l3-after').textContent = rows.map(r => r.text).join('\n');
+  return rows;
+}
+['c-url', 'c-tag', 'c-rep', 'c-emoji', 'c-dup', 'c-short'].forEach(id => $(id).addEventListener('change', () => { renderClean(); if (!$('l3-results').hidden) runLab3(); }));
+$('l3-data').addEventListener('input', renderClean);
+
+function runLab3() {
+  const rows = renderClean().map(r => {
+    const ai = AI3.get(r.raw);
+    return { ...r, topic: ai ? ai.topic : '未事先分析', sent: ai ? ai.sent : analyzeDict(r.text).label };
+  });
+  const n = rows.length || 1;
+  const c = { pos: 0, neu: 0, neg: 0 }; rows.forEach(r => c[r.sent]++);
+  $('l3-bars').innerHTML = ['pos', 'neu', 'neg'].map(k => `
+    <div class="bar-row"><span class="bl">${LABEL[k]}</span>
+      <div class="bar-track"><div class="bar-fill ${k}" style="width:${(c[k] / n * 100).toFixed(1)}%"></div></div>
+      <span class="bv">${c[k]} · ${Math.round(c[k] / n * 100)}%</span></div>`).join('');
+  const t = {};
+  rows.forEach(r => { t[r.topic] = t[r.topic] || { n: 0, neg: 0 }; t[r.topic].n++; if (r.sent === 'neg') t[r.topic].neg++; });
+  const list = Object.entries(t).sort((a, b) => b[1].neg - a[1].neg || b[1].n - a[1].n);
+  $('l3-topics').innerHTML = list.map(([k, v], i) =>
+    `<tr class="${i === 0 && v.neg > 0 ? 'top' : ''}"><td>${esc(k)}</td><td class="n">${v.n}</td><td class="n">${v.neg}</td><td class="n">${Math.round(v.neg / v.n * 100)}%</td></tr>`).join('');
+  $('l3-results').hidden = false;
+}
+$('l3-run').addEventListener('click', runLab3);
+renderClean();
+
+/* ===================== FEEDBACK ===================== */
+let fbRating = 0;
+document.querySelectorAll('#fb-rating button').forEach(b => b.addEventListener('click', () => {
+  fbRating = +b.dataset.v;
+  document.querySelectorAll('#fb-rating button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  $('fb-err').textContent = '';
+}));
+['fb-gain', 'fb-more'].forEach(id => $(id).addEventListener('input', () => { $('fb-err').textContent = ''; }));
+if (store.get('fb-sent', false)) { $('fb-form').hidden = true; $('fb-done').hidden = false; }
+$('fb-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const gain = $('fb-gain').value.trim(), more = $('fb-more').value.trim();
+  if (!fbRating) { $('fb-err').textContent = '請先選一個分數。'; return; }
+  if (!gain && !more) { $('fb-err').textContent = '請至少寫一題文字回饋。'; return; }
+  if (!BACKEND) { $('fb-err').textContent = '回饋還沒有連接後端，請通知講者。'; return; }
+  $('fb-submit').disabled = true; $('fb-submit').textContent = '送出中…';
+  try {
+    await apiPost({ type: 'feedback', rating: fbRating, gain, more });
+    store.set('fb-sent', true);
+    $('fb-form').hidden = true; $('fb-done').hidden = false;
+  } catch (err) {
+    $('fb-err').textContent = '送出失敗，請再按一次。';
+    $('fb-submit').disabled = false; $('fb-submit').textContent = '送出回饋';
+  }
+});
+</script>
+</body>
+</html>
