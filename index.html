@@ -48,6 +48,12 @@ header.top {
 .panel-head { display: flex; flex-direction: column; gap: 10px; max-width: 760px; }
 .panel-head h2 { font-size: clamp(32px, 5vw, 52px); font-weight: 900; line-height: 1.1; letter-spacing: -0.02em; }
 .panel-head p { color: var(--muted); font-size: 17px; }
+.ref { display: flex; flex-direction: column; gap: 36px; max-width: 820px; }
+.ref section { display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--line); padding-top: 16px; }
+.ref h3 { font-size: 18px; font-weight: 700; }
+.ref a { color: var(--lime); }
+.ref .cite { color: var(--muted); font-size: 15px; }
+.ref pre { margin: 0; background: var(--surface); border: 1px solid var(--line); padding: 16px; font-family: var(--font-mono); font-size: 12.5px; line-height: 1.6; color: var(--muted); white-space: pre-wrap; overflow-wrap: anywhere; }
 
 textarea, input[type=text] { width: 100%; background: var(--surface); border: 1px solid var(--line); padding: 14px 16px; resize: vertical; line-height: 1.6; }
 textarea:focus, input[type=text]:focus { border-color: var(--lime); outline: none; }
@@ -183,6 +189,7 @@ table.topics { width: 100%; border-collapse: collapse; }
       <button class="tab" role="tab" id="tab-lab2" aria-controls="lab2" data-target="lab2"><span class="n">02</span>主題分類</button>
       <button class="tab" role="tab" id="tab-lab3" aria-controls="lab3" data-target="lab3"><span class="n">03</span>完整流程</button>
       <button class="tab" role="tab" id="tab-feedback" aria-controls="feedback" data-target="feedback"><span class="n">04</span>回饋</button>
+      <button class="tab" role="tab" id="tab-ref" aria-controls="ref" data-target="ref"><span class="n">05</span>參考資料</button>
     </nav>
   </div>
 </header>
@@ -368,6 +375,55 @@ table.topics { width: 100%; border-collapse: collapse; }
   <div class="done" id="fb-done" hidden><p>收到了，謝謝你！</p><p class="muted">你的回饋已經送出。</p></div>
 </section>
 
+<section class="panel" id="ref" role="tabpanel" aria-labelledby="tab-ref" hidden>
+  <div class="panel-head">
+    <p class="eyebrow">References</p>
+    <h2>參考資料</h2>
+    <p>這個網頁用到的資料與工具。</p>
+  </div>
+
+  <div class="ref">
+    <section>
+      <h3>情緒詞典：NTUSD</h3>
+      <p>上機一的字典法使用 NTUSD（National Taiwan University Sentiment Dictionary），由國立臺灣大學自然語言處理實驗室發布。若詞典檔無法載入，網頁會改用講者自編、約 40 個詞的示範字典。</p>
+      <p><a href="https://github.com/ntunlplab/NTUSD" target="_blank" rel="noopener">github.com/ntunlplab/NTUSD</a></p>
+      <p class="cite">Ku, L.-W., &amp; Chen, H.-H. (2007). Mining opinions from the Web: Beyond relevance retrieval. <i>Journal of the American Society for Information Science and Technology, 58</i>(12), 1838–1850.</p>
+      <p class="muted" style="font-size:15px">NTUSD 以 MIT License 授權，全文如下：</p>
+<pre>MIT License
+
+Copyright (c) 2022 NTU NLPLab
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</pre>
+    </section>
+
+    <section>
+      <h3>AI 分析結果</h3>
+      <p>上機二、上機三中「AI 的答案」是事先用 Claude（Anthropic）分析後放進網頁的，不是即時產生。AI 的判斷不一定正確，僅供課堂比較使用。</p>
+    </section>
+
+    <section>
+      <h3>評論資料</h3>
+      <p>上機二、上機三的評論是為了教學編寫的範例，不是真實店家或使用者的評論。</p>
+    </section>
+  </div>
+</section>
+
 </main>
 
 <script>
@@ -401,7 +457,7 @@ const LEXICON = {
 };
 let WORDS = Object.keys(LEXICON).sort((a, b) => b.length - a.length);
 
-/* 載入 NTUSD：一行一個詞，支援 UTF-8 與 UTF-16。示範字典裡已有的詞以示範字典為準 */
+/* 載入 NTUSD：一行一個詞，支援 UTF-8 與 UTF-16。載入成功就只用 NTUSD，不再使用示範字典 */
 async function loadWordList(file) {
   if (!file) return [];
   try {
@@ -414,17 +470,16 @@ async function loadWordList(file) {
 }
 async function loadNTUSD() {
   const [pos, neg] = await Promise.all([loadWordList(CONFIG.NTUSD_POS), loadWordList(CONFIG.NTUSD_NEG)]);
-  if (!pos.length && !neg.length) return;
-  const negSet = new Set(neg);
-  let added = 0;
-  pos.forEach(w => { if (!negSet.has(w) && !(w in LEXICON)) { LEXICON[w] = 1; added++; } });
-  const posSet = new Set(pos);
-  neg.forEach(w => { if (!posSet.has(w) && !(w in LEXICON)) { LEXICON[w] = -1; added++; } });
+  if (!pos.length && !neg.length) return;            // 讀不到 → 繼續用示範字典
+  const posSet = new Set(pos), negSet = new Set(neg);
+  Object.keys(LEXICON).forEach(k => delete LEXICON[k]); // 清掉示範字典
+  pos.forEach(w => { if (!negSet.has(w)) LEXICON[w] = 1; });   // 正負兩邊都有的詞略過
+  neg.forEach(w => { if (!posSet.has(w)) LEXICON[w] = -1; });
   WORDS = Object.keys(LEXICON).sort((a, b) => b.length - a.length);
   const nameEl = document.getElementById('l1-dictname');
-  if (nameEl) nameEl.textContent = `NTUSD ＋ 示範字典 · ${WORDS.length.toLocaleString()} 個詞`;
+  if (nameEl) nameEl.textContent = `NTUSD · ${WORDS.length.toLocaleString()} 個詞`;
   const noteEl = document.getElementById('l1-dictnote');
-  if (noteEl) noteEl.textContent = '這裡用的是 NTUSD（台大情緒詞典，© 2022 NTU NLPLab，MIT License），再加上幾個示範用的詞。';
+  if (noteEl) noteEl.innerHTML = '這裡用的是 NTUSD（台大情緒詞典，© 2022 NTU NLPLab，MIT License）。<a href="#ref" style="color:var(--lime)">出處與授權</a>';
 }
 loadNTUSD();
 function analyzeDict(text) {
@@ -489,7 +544,7 @@ async function apiGetBoard() {
 }
 
 /* ===== Tabs ===== */
-const TABS = ['lab1', 'lab2', 'lab3', 'feedback'];
+const TABS = ['lab1', 'lab2', 'lab3', 'feedback', 'ref'];
 function showTab(id) {
   if (!TABS.includes(id)) id = 'lab1';
   document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', String(b.dataset.target === id)));
@@ -501,6 +556,7 @@ document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () =>
   window.scrollTo({ top: 0 });
 }));
 showTab((location.hash || '').slice(1));
+window.addEventListener('hashchange', () => { showTab(location.hash.slice(1)); window.scrollTo({ top: 0 }); });
 
 /* ===================== LAB 1 ===================== */
 let l1 = { text: '', dict: null, truth: null };
