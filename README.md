@@ -148,11 +148,30 @@ AI 的主題和情感是事先跑好的，換資料時記得一起更新（可�
 
 ---
 
-## 上課前檢查清單
+## NTUSD 授權
 
-- [ ] 方案 A：後端網址加上 `?type=board` 能看到 `{"ok":true,...}`
-- [ ] 方案 B：上課前一兩天登入 Supabase，確認專案沒有被暫停
-- [ ] 打開 GitHub Pages 網址，上機一的排行榜狀態顯示「全班共 0 句 · 自動更新」（不是「尚未連接後端」）
-- [ ] 自己送一句測試句子，確認試算表有出現，再把它打勾隱藏
-- [ ] 送一份測試回饋，確認「回饋」工作表有資料
-- [ ] 用學校的電腦打開一次，確認網路沒有擋 `github.io`，以及 `script.google.com`（方案 A）或 `supabase.co`（方案 B）
+本網頁使用的情緒詞典（ntusd-positive.txt、ntusd-negative.txt）來自
+國立臺灣大學自然語言處理實驗室的 NTUSD：https://github.com/ntunlplab/NTUSD
+以 MIT License 授權，全文如下：
+
+MIT License
+
+Copyright (c) 2022 NTU NLPLab
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
