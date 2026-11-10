@@ -83,7 +83,8 @@ textarea:focus, input[type=text]:focus { border-color: var(--lime); outline: non
 .verdict { font-size: 44px; font-weight: 900; line-height: 1; }
 .verdict.pos { color: var(--lime); } .verdict.neg { color: var(--coral); } .verdict.neu { color: var(--neu); }
 .tokens { font-size: 26px; line-height: 2.2; overflow-wrap: anywhere; }
-.tok { padding: 2px 3px; }
+.tok { padding: 2px 3px; margin: 0 2px; }
+.tok.plain { border-bottom: 2px solid var(--line); }
 .tok.pos { color: var(--lime); border-bottom: 2px solid var(--lime); }
 .tok.neg { color: var(--coral); border-bottom: 2px solid var(--coral); }
 .tok sub { font-family: var(--font-mono); font-size: 12px; margin-left: 1px; }
@@ -222,7 +223,7 @@ table.topics { width: 100%; border-collapse: collapse; }
     <p class="verdict" id="l1-verdict">—</p>
     <div class="tokens" id="l1-tokens"></div>
     <p class="score-line" id="l1-score"></p>
-    <p class="note" style="margin-top:12px">字典法：每個詞查表給分（正面 +1、負面 −1），全部加總決定結果。<span id="l1-dictnote">這裡用的是教學用的簡化字典，實務上常用 NTUSD（台大情緒詞典）等正式詞典。</span></p>
+    <p class="note" style="margin-top:12px"><span id="l1-method">方法：① 用瀏覽器內建的中文斷詞（Intl.Segmenter）把句子切成詞（底線就是切出來的詞）；② 每個詞拿去查情緒詞典，正面詞 +1、負面詞 −1；③ 加總，大於 0 判正面、小於 0 判負面、等於 0 判中性。</span><span id="l1-dictnote">這裡用的是教學用的簡化字典，實務上常用 NTUSD（台大情緒詞典）等正式詞典。</span> <a href="#ref" style="color:var(--lime)">方法與出處</a></p>
   </div>
 
   <div class="truth hide-present">
@@ -413,6 +414,16 @@ SOFTWARE.</pre>
     </section>
 
     <section>
+      <h3>上機一的字典法怎麼算</h3>
+      <ol style="margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px">
+        <li><b>斷詞</b>：用瀏覽器內建的中文斷詞功能（JavaScript 的 <code>Intl.Segmenter</code>，語言設定為繁體中文）把句子切成詞。</li>
+        <li><b>查表</b>：每個詞拿去 NTUSD 查，詞要完全相同才算。在正面清單 +1，在負面清單 −1，不在清單裡 0 分。同時出現在兩份清單的詞不計分。</li>
+        <li><b>加總</b>：總分大於 0 判正面，小於 0 判負面，等於 0 判中性。</li>
+      </ol>
+      <p class="muted" style="font-size:15px">NTUSD 本身只分正面和負面，沒有分數，±1 與判斷規則是本網頁為了教學設定的。瀏覽器內建斷詞的準確度不如 CKIP、jieba 等專門工具，不同瀏覽器切出來的結果也可能略有不同。若瀏覽器不支援內建斷詞，會改用正向最大匹配（直接在句子中找字典裡的詞，長的詞優先）。</p>
+    </section>
+
+    <section>
       <h3>AI 分析結果</h3>
       <p>上機二、上機三中「AI 的答案」是事先用 Claude（Anthropic）分析後放進網頁的，不是即時產生。AI 的判斷不一定正確，僅供課堂比較使用。</p>
     </section>
@@ -497,18 +508,37 @@ async function loadNTUSD() {
   const nameEl = document.getElementById('l1-dictname');
   if (nameEl) nameEl.textContent = `NTUSD · ${WORDS.length.toLocaleString()} 個詞`;
   const noteEl = document.getElementById('l1-dictnote');
-  if (noteEl) noteEl.innerHTML = '這裡用的是 NTUSD（台大情緒詞典，© 2022 NTU NLPLab，MIT License）。<a href="#ref" style="color:var(--lime)">出處與授權</a>';
+  if (noteEl) noteEl.textContent = '詞典：NTUSD（台大情緒詞典，© 2022 NTU NLPLab，MIT License）。';
 }
 loadNTUSD();
+/* 字典法：先斷詞，再逐詞查表。
+   斷詞用瀏覽器內建的 Intl.Segmenter；舊瀏覽器不支援時，改用正向最大匹配（直接在句子裡找字典的詞，長的詞優先） */
+const SEGMENTER = (typeof Intl !== 'undefined' && Intl.Segmenter) ? new Intl.Segmenter('zh-Hant', { granularity: 'word' }) : null;
+const finish = (parts, score) => ({ parts, score, label: score > 0 ? 'pos' : score < 0 ? 'neg' : 'neu' });
 function analyzeDict(text) {
+  if (!SEGMENTER) return analyzeDictMaxMatch(text);
+  const parts = []; let score = 0;
+  for (const seg of SEGMENTER.segment(text)) {
+    if (!seg.isWordLike) { parts.push({ t: seg.segment }); continue; }           // 標點、空白
+    const s = LEXICON[seg.segment] || 0;                                       // 整個詞完全相同才算
+    score += s;
+    parts.push({ t: seg.segment, s, word: true });
+  }
+  return finish(parts, score);
+}
+function analyzeDictMaxMatch(text) {
   const parts = []; let score = 0, i = 0, buf = '';
   while (i < text.length) {
     const w = WORDS.find(w => text.startsWith(w, i));
-    if (w) { if (buf) { parts.push({ t: buf }); buf = ''; } parts.push({ t: w, s: LEXICON[w] }); score += LEXICON[w]; i += w.length; }
+    if (w) { if (buf) { parts.push({ t: buf }); buf = ''; } parts.push({ t: w, s: LEXICON[w], word: true }); score += LEXICON[w]; i += w.length; }
     else { buf += text[i]; i++; }
   }
   if (buf) parts.push({ t: buf });
-  return { parts, score, label: score > 0 ? 'pos' : score < 0 ? 'neg' : 'neu' };
+  return finish(parts, score);
+}
+if (!SEGMENTER) {
+  const m = document.getElementById('l1-method');
+  if (m) m.textContent = '方法：這個瀏覽器不支援內建斷詞，所以改成直接在句子裡找字典裡的詞（長的詞優先，稱為正向最大匹配），對到正面詞 +1、負面詞 −1，加總後大於 0 判正面、小於 0 判負面、等於 0 判中性。';
 }
 
 const LABEL = { pos: '正面', neu: '中性', neg: '負面' };
@@ -586,8 +616,9 @@ function runLab1() {
   if (!text) return;
   const r = analyzeDict(text);
   l1 = { text, dict: r, truth: null };
-  $('l1-tokens').innerHTML = r.parts.map(p => p.s
-    ? `<span class="tok ${p.s > 0 ? 'pos' : 'neg'}">${esc(p.t)}<sub>${p.s > 0 ? '+1' : '−1'}</sub></span>` : esc(p.t)).join('');
+  $('l1-tokens').innerHTML = r.parts.map(p => !p.word ? esc(p.t)
+    : p.s ? `<span class="tok ${p.s > 0 ? 'pos' : 'neg'}">${esc(p.t)}<sub>${p.s > 0 ? '+1' : '−1'}</sub></span>`
+    : `<span class="tok plain">${esc(p.t)}</span>`).join('');
   const v = $('l1-verdict'); v.className = 'verdict ' + r.label; v.textContent = LABEL[r.label];
   $('l1-score').textContent = `總分 ${r.score > 0 ? '+' : ''}${r.score} → ${LABEL[r.label]}`;
   document.querySelectorAll('#l1-truth button').forEach(b => b.setAttribute('aria-pressed', 'false'));
