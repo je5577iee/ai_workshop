@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>文字讀心術 Lab</title>
+<title> AI Workshop - AI的文字讀心術 Lab</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap">
 <style>
@@ -249,7 +249,7 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
 
 <header class="top">
   <div class="top-inner">
-    <div class="brand">文字<span>讀心術</span> Lab</div>
+    <div class="brand">AI的文字<span>讀心術</span> Lab</div>
     <nav class="tabs" role="tablist" aria-label="上機分頁">
       <button class="tab" role="tab" id="tab-lab1" aria-controls="lab1" data-target="lab1"><span class="n">01</span>騙過字典</button>
       <button class="tab" role="tab" id="tab-lab2" aria-controls="lab2" data-target="lab2"><span class="n">02</span>主題分類</button>
@@ -271,15 +271,9 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
   </div>
 
   <div class="section hide-present">
-    <textarea id="l1-input" rows="2" maxlength="60" aria-label="輸入評論">推！推薦給我討厭的人。</textarea>
+    <textarea id="l1-input" rows="2" maxlength="60" aria-label="輸入評論">非常推薦貴店的漢堡。</textarea>
     <div class="row">
       <button class="btn" id="l1-run">讓字典判斷</button>
-      <span class="muted" style="font-size:14px">提示：</span>
-      <div class="chips">
-        <span class="chip" style="cursor:default">反諷</span><span class="chip" style="cursor:default">否定句</span>
-        <span class="chip" style="cursor:default">網路用語</span><span class="chip" style="cursor:default">表情符號</span>
-        <span class="chip" style="cursor:default">先誇後罵</span>
-      </div>
     </div>
   </div>
 
@@ -292,7 +286,7 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
   </div>
 
   <div class="truth hide-present">
-    <p style="font-weight:700">你覺得這句話的正確答案是？</p>
+    <p style="font-weight:700">你覺得這句話的情緒是？</p>
     <div class="seg" id="l1-truth">
       <button class="pos" data-v="pos" aria-pressed="false">正面</button>
       <button class="neu" data-v="neu" aria-pressed="false">中性</button>
@@ -318,8 +312,8 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
 <section class="panel" id="lab2" role="tabpanel" aria-labelledby="tab-lab2" hidden>
   <div class="panel-head">
     <p class="eyebrow">Lab 02 · 15 min</p>
-    <h2>你和 AI，誰分得好？</h2>
-    <p>先訂出你的主題，把 20 則評論分類；全部分完之後，再揭曉 AI 的分法。</p>
+    <h2>你和 AI，怎麼分主題？</h2>
+    <p>先訂出你的主題，把 20 則評論分類；全部分完之後，再來看 AI 的分法。</p>
   </div>
 
   <div class="section">
@@ -327,7 +321,7 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
     <ol class="howto">
       <li>先往下<a href="#l2-table" id="l2-browse">快速看過 20 則評論</a>，不用細讀，大約 1 分鐘。</li>
       <li>想一想：大家都在講哪幾件事？例如有人在講「等很久」，有人在講「店員」。</li>
-      <li>把這幾件事取個名字，新增成你的主題。分類時想到新的，隨時可以回來加。</li>
+      <li>把這些事歸納後，訂出你的主題。分類時想到新的，隨時可以回來加。</li>
     </ol>
     <div class="row">
       <input type="text" id="l2-topic-input" maxlength="10" placeholder="輸入主題名稱，按 Enter" style="max-width:280px">
@@ -337,7 +331,7 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
   </div>
 
   <div class="section">
-    <div class="label"><h3>02　逐則分類</h3><span class="muted" style="font-size:14px">真實資料：Google 地圖多家麥當勞分店的評論</span></div>
+    <div class="label"><h3>02　逐則分類</h3><span class="muted" style="font-size:14px">資料來源：請參照參考資料 - 評論資料 - 上機二</span></div>
     <div class="tbl-wrap" id="l2-table">
       <table class="reviews">
         <thead><tr><th>#</th><th>評論</th><th>你的分類</th><th>AI 分類</th></tr></thead>
@@ -349,25 +343,25 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
   <div class="section">
     <div class="label"><h3>03　比一比</h3><button class="btn" id="l2-reveal">揭曉 AI 的分法</button></div>
     <div class="tally" id="l2-tally"></div>
-    <p class="note" id="l2-note">AI 的結果已經事先跑好（由 Claude 分析）。分完之後按「揭曉」，跟你一樣的會變綠色，不一樣的會變橘色。</p>
+    <p class="note" id="l2-note">AI 的結果已經事先跑好（由 Claude 分析）。分完之後按「揭曉」，跟你一樣的會變橘色，不一樣的會變橘色。</p>
   </div>
 </section>
 
 <!-- ===================== LAB 3 ===================== -->
 <section class="panel" id="lab3" role="tabpanel" aria-labelledby="tab-lab3" hidden>
   <div class="panel-head">
-    <p class="eyebrow">Lab 03 · 20 min · 小組實戰</p>
+    <p class="eyebrow">Lab 03 · 20 min · 實戰</p>
     <h2>從問題到洞察</h2>
-    <p>選一個角色，照著六個步驟走一次，最後用一句話報告你們的發現。</p>
+    <p>選一個角色，照著六個步驟走一次，最後用一句話說明你們的發現。</p>
   </div>
 
   <div class="steps">
     <div class="step"><p class="sn">01</p><div class="step-body">
       <h3>選角色，寫下問題</h3>
-      <p class="muted">先決定你要回答什麼，再去看資料。好問題 = 對象 + 面向 + 目的</p>
+      <p class="muted">先決定你要回答什麼，再去看資料。</p>
       <div class="ds" id="l3-ds" role="group" aria-label="選擇角色"></div>
       <p class="scenario" id="l3-scenario"></p>
-      <input type="text" id="l3-q" maxlength="80" placeholder="你們的問題，例如：哪一類的抱怨最多？">
+      <input type="text" id="l3-q" maxlength="80" placeholder="定義問題，例如：哪一類的抱怨最多？">
       <div class="row"><button class="btn" id="l3-get">拿到資料</button><span class="status" id="l3-get-msg"></span></div>
     </div></div>
 
@@ -389,7 +383,7 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
         <label><input type="checkbox" id="c-dup" checked>刪除重複評論</label>
         <label><input type="checkbox" id="c-short">刪除少於 3 個字的評論</label>
       </div>
-      <p class="note">想一想：「讚」「好喝」這種短評論該刪嗎？勾選前後，看看下面的 EDA、情感分布和主題表各變了多少。</p>
+      <p class="note">勾選前後，看看下面的 EDA、情感分布和主題表各變了多少。</p>
       <div class="preview">
         <div><p class="cap" id="l3-before-cap">清理前</p><pre id="l3-before"></pre></div>
         <div><p class="cap" id="l3-after-cap">清理後</p><pre id="l3-after"></pre></div>
@@ -405,7 +399,6 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
         <div class="eda-card"><p class="cap">評論長度</p><div id="eda-len"></div></div>
         <div class="eda-card"><p class="cap">高頻詞前 10 名</p><div id="eda-words" class="eda-words"></div><p class="cap">用瀏覽器斷詞，去掉「真的」「覺得」這類常見詞</p></div>
       </div>
-      <p class="note">高頻詞就像 Google 評論上方那排標籤：看得出大家常提什麼，但看不出好壞，也還沒歸類。</p>
           </div></div>
 
     <div class="step"><p class="sn">05</p><div class="step-body">
@@ -423,7 +416,7 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
           <div class="drill" id="l3-drill" hidden></div>
         </div>
         <div class="section" style="margin-top:28px">
-          <details class="l3-detail"><summary>抽查：看每一則評論 AI 怎麼標</summary>
+          <details class="l3-detail"><summary>看每一則評論 AI 怎麼標</summary>
             <div class="tbl-wrap"><table class="l3-rows"><tbody id="l3-rows"></tbody></table></div>
           </details>
         </div>
@@ -444,7 +437,7 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
   <div class="panel-head">
     <p class="eyebrow">Feedback · 5 min</p>
     <h2>給我一點回饋</h2>
-    <p>匿名填寫，只有講者看得到。寫得越真實越好。</p>
+    <p>匿名填寫，只有講者看得到。</p>
   </div>
 
   <form class="fb" id="fb-form" novalidate>
