@@ -216,7 +216,17 @@ header.top { background: rgba(22, 28, 43, 0.92); backdrop-filter: blur(8px); }
 .ds button[aria-pressed="true"] { background: var(--lime); color: var(--ink); }
 textarea, input[type=text], select { border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); }
 textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue); }
-.insight-fill input { border-radius: 0; background: none; }
+.insight-fill input { border-radius: 0; background: none; border: 0; border-bottom: 2px solid var(--line); }
+.insight-fill input:focus { border-bottom-color: var(--blue); }
+.topics tbody tr { cursor: pointer; }
+.topics tbody tr:hover td, .topics tbody tr.sel td { background: var(--surface-2); }
+.drill-hint { font-size: 12px; color: var(--blue); margin-left: 8px; opacity: 0.8; font-weight: 400; }
+.drill { margin-top: 16px; background: var(--surface); border: 1px solid var(--blue); border-radius: var(--radius); padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
+.drill-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.drill-head .btn { padding: 4px 12px; font-size: 13px; }
+.drill ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.drill li { display: flex; gap: 10px; align-items: baseline; line-height: 1.6; }
+.drill li .asp { flex: none; font-size: 12px; }
 .judge, .truth, .done, .eda-card, .scenario, .preview pre, .ref pre, .tbl-wrap, .bar-track, .bar-fill { border-radius: var(--radius); }
 .truth, .done { border: 1px solid var(--line); }
 .judge, .eda-card, .preview pre { border: 1px solid var(--line); }
@@ -227,6 +237,10 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
 .eda-row .tr, .eda-row .fl { border-radius: 3px; }
 .eda-row .fl { background: var(--neu); }
 .note { border-left-color: var(--blue); }
+.howto { margin: 0; padding: 14px 18px 14px 36px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); display: flex; flex-direction: column; gap: 6px; color: var(--muted); font-size: 15px; }
+.howto li::marker { color: var(--lime); font-family: var(--font-mono); font-weight: 700; }
+.howto a { color: var(--blue); }
+#l2-table, #l3-work { scroll-margin-top: 90px; }
 .step .sn { color: var(--lime); }
 .ref a, .note a { color: var(--blue) !important; }
 </style>
@@ -309,9 +323,14 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
   </div>
 
   <div class="section">
-    <div class="label"><h3>01　訂出你的主題</h3><span class="muted" style="font-size:14px">建議 3–5 個</span></div>
+    <div class="label"><h3>01　先瀏覽評論，再訂出你的主題</h3><span class="muted" style="font-size:14px">建議 3–5 個</span></div>
+    <ol class="howto">
+      <li>先往下<a href="#l2-table" id="l2-browse">快速看過 20 則評論</a>，不用細讀，大約 1 分鐘。</li>
+      <li>想一想：大家都在講哪幾件事？例如有人在講「等很久」，有人在講「店員」。</li>
+      <li>把這幾件事取個名字，新增成你的主題。分類時想到新的，隨時可以回來加。</li>
+    </ol>
     <div class="row">
-      <input type="text" id="l2-topic-input" maxlength="10" placeholder="例如：價格" style="max-width:280px">
+      <input type="text" id="l2-topic-input" maxlength="10" placeholder="輸入主題名稱，按 Enter" style="max-width:280px">
       <button class="btn ghost" id="l2-topic-add">新增主題</button>
     </div>
     <div class="mytopics" id="l2-topics"></div>
@@ -319,7 +338,7 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
 
   <div class="section">
     <div class="label"><h3>02　逐則分類</h3><span class="muted" style="font-size:14px">真實資料：Google 地圖多家麥當勞分店的評論</span></div>
-    <div class="tbl-wrap">
+    <div class="tbl-wrap" id="l2-table">
       <table class="reviews">
         <thead><tr><th>#</th><th>評論</th><th>你的分類</th><th>AI 分類</th></tr></thead>
         <tbody id="l2-rows"></tbody>
@@ -373,7 +392,7 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
         <label><input type="checkbox" id="c-url" checked>移除網址</label>
         <label><input type="checkbox" id="c-tag" checked>移除 #標籤</label>
         <label><input type="checkbox" id="c-rep" checked>壓縮重複字（～～～）</label>
-        <label><input type="checkbox" id="c-emoji">移除表情符號</label>
+        <label><input type="checkbox" id="c-emoji">移除表情符號與顏文字</label>
         <label><input type="checkbox" id="c-dup" checked>刪除重複評論</label>
         <label><input type="checkbox" id="c-short">刪除少於 3 個字的評論</label>
       </div>
@@ -396,6 +415,7 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
           <p class="eyebrow" style="color:var(--muted)">主題 × 負評</p>
           <div class="tbl-wrap"><table class="topics"><thead><tr><th>主題</th><th>提及次數</th><th>負評</th><th>負評比例</th></tr></thead><tbody id="l3-topics"></tbody></table></div>
           <p class="note" style="margin-top:10px" id="l3-topic-note"></p>
+          <div class="drill" id="l3-drill" hidden></div>
         </div>
         <div class="section" style="margin-top:28px">
           <details class="l3-detail"><summary>抽查：看每一則評論 AI 怎麼標</summary>
@@ -407,6 +427,7 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
 
     <div class="step"><p class="sn">05</p><div class="step-body">
       <h3>提供洞察</h3>
+      <p class="muted">你不是店家，怎麼知道要改什麼？答案在顧客的原文裡：點上面表格的主題，看負評實際在抱怨什麼，再從裡面找出具體的問題。</p>
       <p class="insight-fill">我們發現 <input type="text" id="l3-i1" placeholder="哪個主題的負評最多？比例多高？">，<br>所以建議 <input type="text" id="l3-i2" placeholder="具體要改善什麼？">。</p>
     </div></div>
     </div>
@@ -804,7 +825,7 @@ let l2Revealed = false;
 function renderTopics() {
   $('l2-topics').innerHTML = l2Topics.length ? l2Topics.map((t, i) =>
     `<span class="mytopic">${esc(t)}<button type="button" aria-label="刪除 ${esc(t)}" data-i="${i}">×</button></span>`).join('')
-    : '<span class="muted" style="font-size:14px">還沒有主題，先新增幾個吧。</span>';
+    : '<span class="muted" style="font-size:14px">還沒有主題。先看過下面的評論，再新增幾個吧。</span>';
   $('l2-topics').querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
     const removed = l2Topics[+b.dataset.i];
     l2Topics.splice(+b.dataset.i, 1);
@@ -843,6 +864,7 @@ function addTopic() {
   l2Topics.push(v); $('l2-topic-input').value = ''; renderTopics(); renderRows();
 }
 $('l2-topic-add').addEventListener('click', addTopic);
+$('l2-browse').addEventListener('click', e => { e.preventDefault(); $('l2-table').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
 $('l2-topic-input').addEventListener('keydown', e => { if (e.key === 'Enter') addTopic(); });
 $('l2-reveal').addEventListener('click', () => {
   l2Revealed = !l2Revealed;
@@ -1027,6 +1049,7 @@ function renderRoles() {
 }
 function selectRole(k) {
   if (k === l3Key) return;
+  l3Drill = '';
   l3Key = k; const d = DATASETS[k];
   renderRoles();
   $('l3-scenario').textContent = d.scenario;
@@ -1048,10 +1071,20 @@ $('l3-get').addEventListener('click', () => {
   $('l3-work').scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
 
+/* 表情符號（😀）用 Unicode 分類就抓得到；顏文字（(＞人＜;)、@“@、？_？）是用一般符號拼出來的，只能靠規則猜 */
+const KAO_MARK = /[＞＜><;；^＾_＿゜°ｰー̀́ꇴω∀´`≧≦￣・･*＊‿⊙◕▽皿～~ノヽ╯╰□≖ᴗ]/;
+function removeEmoji(l) {
+  return l
+    .replace(/[\p{Extended_Pictographic}\u{FE0F}\u{200D}\u{1F3FB}-\u{1F3FF}]/gu, '')
+    .replace(/[٩۶ᕕᕗ]?[（(][^()（）\n]{1,12}?[)）][۶وᕗ]?/g, m => KAO_MARK.test(m) ? '' : m)   // (＞人＜;)、٩(ｰ̀ꇴｰ́)
+    .replace(/[@＠][“”"'＂][@＠]/g, '')                                                 // @“@
+    .replace(/[?？TＴ^＾][_＿][?？TＴ^＾]/g, '')                                       // ？_？、T_T、^_^
+    .replace(/XD+(?![A-Za-z])/g, '');                                                  // XD
+}
 function cleanText(l) {
   if ($('c-url').checked) l = l.replace(/https?:\/\/\S+/g, '');
   if ($('c-tag').checked) l = l.replace(/#\S+/g, '');
-  if ($('c-emoji').checked) l = l.replace(/[\p{Extended_Pictographic}\u{FE0F}\u{200D}]/gu, '');
+  if ($('c-emoji').checked) l = removeEmoji(l);
   if ($('c-rep').checked) l = l.replace(/(.)\1{2,}/gu, '$1');
   return l.replace(/\s+/g, ' ').trim();
 }
@@ -1094,13 +1127,34 @@ function runLab3() {
     asp.forEach(([tp, s]) => { t[tp] = t[tp] || { n: 0, neg: 0 }; t[tp].n++; if (s === 'neg') t[tp].neg++; });
   });
   const list = Object.entries(t).sort((a, b) => b[1].neg - a[1].neg || b[1].n - a[1].n);
+  l3Last = rows;
   $('l3-topics').innerHTML = list.map(([k, v], i) =>
-    `<tr class="${i === 0 && v.neg > 0 ? 'top' : ''}"><td>${esc(k)}</td><td class="n">${v.n}</td><td class="n">${v.neg}</td><td class="n">${Math.round(v.neg / v.n * 100)}%</td></tr>`).join('');
+    `<tr class="${i === 0 && v.neg > 0 ? 'top' : ''}${k === l3Drill ? ' sel' : ''}" data-topic="${esc(k)}" tabindex="0" title="點一下，看這個主題的評論"><td>${esc(k)} <span class="drill-hint">看評論 ›</span></td><td class="n">${v.n}</td><td class="n">${v.neg}</td><td class="n">${Math.round(v.neg / v.n * 100)}%</td></tr>`).join('');
   $('l3-topic-note').textContent = `另有 ${noTopic} 則評論沒有提到具體主題（例如「讚」、廣告），沒有算進這張表，但有算進上面的情感分布。一則評論可能同時提到好幾個主題，而且每個主題的好壞可能不同（例如「服務很好，但房間很髒」），所以這張表算的是「提及次數」。`;
   $('l3-rows').innerHTML = rows.map(r => `<tr><td>${esc(r.text)}${r.known ? '' : ' <span class="muted">（未事先分析，情感由字典判斷）</span>'}</td>
     <td style="white-space:nowrap"><span class="asp ${r.sent}">${LABEL[r.sent]}</span></td>
     <td>${r.asp.map(([tp, s]) => `<span class="asp ${s}">${esc(tp === '其他' ? '無具體主題' : tp)} ${s === 'pos' ? '＋' : s === 'neg' ? '－' : '○'}</span>`).join('')}</td></tr>`).join('');
+  $('l3-topics').querySelectorAll('tr').forEach(tr => {
+    const open = () => { l3Drill = l3Drill === tr.dataset.topic ? '' : tr.dataset.topic; runLab3(); };
+    tr.addEventListener('click', open);
+    tr.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+  });
+  renderDrill();
   $('l3-results').hidden = false;
+}
+/* 點主題：列出提到這個主題的評論，負評排前面 */
+let l3Drill = '', l3Last = [];
+function renderDrill() {
+  const box = $('l3-drill');
+  if (!l3Drill) { box.hidden = true; return; }
+  const order = { neg: 0, neu: 1, pos: 2 };
+  const hits = l3Last.flatMap(r => r.asp.filter(([tp]) => tp === l3Drill).map(([, s]) => ({ text: r.text, s })))
+    .sort((a, b) => order[a.s] - order[b.s]);
+  box.innerHTML = `<div class="drill-head"><b>「${esc(l3Drill)}」的評論 · ${hits.length} 則</b><button type="button" class="btn ghost" id="l3-drill-close">收起</button></div>
+    <p class="muted" style="font-size:14px">讀讀看負評：大家抱怨的是同一件事，還是好幾件不同的事？</p>
+    <ul>${hits.map(h => `<li><span class="asp ${h.s}">${LABEL[h.s]}</span>${esc(h.text)}</li>`).join('')}</ul>`;
+  box.hidden = false;
+  $('l3-drill-close').addEventListener('click', () => { l3Drill = ''; runLab3(); });
 }
 $('l3-run').addEventListener('click', runLab3);
 renderRoles();
