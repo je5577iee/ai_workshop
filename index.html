@@ -3,21 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>AI Workshop - 文字讀心術 Lab</title>
+<title>文字讀心術 Lab</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap">
 <style>
 :root {
-  --bg: #111214; --surface: #18191C; --surface-2: #1F2124; --line: #2A2C30;
-  --fg: #EDEBE6; --muted: #8A8D93; --lime: #BEDD6A; --ink: #111214; --coral: #EF7A5C; --neu: #8A8D93;
+  /* 配色跟簡報一致：深藍底、琥珀＝正面／重點、粉紅＝負面、藍＝次要重點 */
+  --bg: #161C2B; --bg-deep: #10141F; --surface: #1F2739; --surface-2: #28324A; --line: #34405C;
+  --fg: #F2F4F8; --muted: #9CA5BA; --lime: #F5B54F; --ink: #161C2B; --coral: #FF6680; --neu: #9CA5BA;
+  --blue: #7FB2FF; --blue-strong: #2F7BEA; --radius: 10px;
   --font-body: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', Arial, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+  --font-mono: Consolas, 'JetBrains Mono', 'Courier New', monospace;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
 body {
-  background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.6;
+  background: radial-gradient(1200px 600px at 0% 0%, #1D2640 0%, transparent 60%), linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%) fixed; color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.6;
   padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
   padding-block: 0 64px;
 }
@@ -156,6 +158,31 @@ table.topics { width: 100%; border-collapse: collapse; }
 .topics td { padding: 10px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
 .topics td.n { font-family: var(--font-mono); }
 .topics tr.top td { color: var(--coral); font-weight: 700; }
+.ds { display: flex; flex-wrap: wrap; gap: 8px; }
+.ds button { cursor: pointer; background: none; border: 1px solid var(--line); padding: 8px 18px; color: var(--fg); }
+.ds button[aria-pressed="true"] { background: var(--lime); color: var(--ink); border-color: var(--lime); font-weight: 700; }
+details.l3-detail summary { cursor: pointer; color: var(--muted); font-size: 14px; }
+table.l3-rows { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+table.l3-rows td { border-top: 1px solid var(--line); padding: 8px 6px; vertical-align: top; }
+.asp { display: inline-block; margin: 2px 6px 2px 0; padding: 0 8px; border: 1px solid var(--line); white-space: nowrap; }
+.asp.pos { color: var(--lime); border-color: var(--lime); }
+.asp.neg { color: var(--coral); border-color: var(--coral); }
+.asp.neu { color: var(--muted); }
+.scenario { background: var(--surface); border-left: 3px solid var(--lime); padding: 12px 16px; margin: 12px 0; line-height: 1.7; }
+.scenario:empty { display: none; }
+.eda { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 14px 0; }
+.eda-card { background: var(--surface); border-top: 3px solid var(--lime); padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.eda .cap { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+.eda-big { font-family: var(--font-mono); font-size: 44px; font-weight: 700; line-height: 1; color: var(--lime); }
+.eda-row { display: grid; grid-template-columns: 52px 1fr 28px; gap: 8px; align-items: center; font-size: 13px; }
+.eda-row .lb { font-family: var(--font-mono); color: var(--muted); white-space: nowrap; }
+.eda-row .tr { height: 10px; background: var(--line); }
+.eda-row .fl { height: 100%; background: var(--fg); }
+.eda-row .fl.lo { background: var(--coral); } .eda-row .fl.hi { background: var(--lime); }
+.eda-row .v { font-family: var(--font-mono); text-align: right; }
+.eda-words { display: flex; flex-wrap: wrap; gap: 6px; }
+.eda-words span { border: 1px solid var(--line); padding: 2px 8px; font-size: 14px; }
+.eda-words b { font-family: var(--font-mono); font-size: 12px; color: var(--lime); margin-left: 4px; font-weight: 700; }
 .insight-fill { font-size: 20px; line-height: 2.2; }
 .insight-fill input { display: inline-block; width: auto; min-width: 200px; max-width: 100%; padding: 4px 10px; border-width: 0 0 2px; border-color: var(--lime); background: var(--surface); }
 
@@ -178,6 +205,30 @@ table.topics { width: 100%; border-collapse: collapse; }
   .verdict { font-size: 34px; }
 }
 @media (prefers-reduced-motion: reduce) { .bar-fill { transition: none; } }
+
+/* ===== 簡報風格：圓角卡片、藍色主按鈕 ===== */
+header.top { background: rgba(22, 28, 43, 0.92); backdrop-filter: blur(8px); }
+.tab { border-radius: 999px; }
+.btn { background: var(--blue-strong); border-color: var(--blue-strong); color: #fff; border-radius: var(--radius); }
+.btn.ghost { background: none; border-color: var(--blue); color: var(--blue); }
+.chip, .ds button, .seg button, .stars button { border-radius: var(--radius); }
+.seg button + button { border-left: 1px solid var(--line); margin-left: 6px; }
+.ds button[aria-pressed="true"] { background: var(--lime); color: var(--ink); }
+textarea, input[type=text], select { border-radius: var(--radius); background: var(--surface); border: 1px solid var(--line); }
+textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue); }
+.insight-fill input { border-radius: 0; background: none; }
+.judge, .truth, .done, .eda-card, .scenario, .preview pre, .ref pre, .tbl-wrap, .bar-track, .bar-fill { border-radius: var(--radius); }
+.truth, .done { border: 1px solid var(--line); }
+.judge, .eda-card, .preview pre { border: 1px solid var(--line); }
+.eda-card { border-top: 1px solid var(--line); }
+.eda-card .cap:first-child { color: var(--lime); font-weight: 700; }
+.scenario { border: 1px solid var(--blue); border-left: 4px solid var(--blue); background: var(--surface-2); }
+.tag, .asp, .tok.plain, .mytopic, .eda-words span { border-radius: 6px; }
+.eda-row .tr, .eda-row .fl { border-radius: 3px; }
+.eda-row .fl { background: var(--neu); }
+.note { border-left-color: var(--blue); }
+.step .sn { color: var(--lime); }
+.ref a, .note a { color: var(--blue) !important; }
 </style>
 </head>
 <body>
@@ -206,9 +257,15 @@ table.topics { width: 100%; border-collapse: collapse; }
   </div>
 
   <div class="section hide-present">
-    <textarea id="l1-input" rows="2" maxlength="60" aria-label="輸入評論">不錯喔! 很推薦。</textarea>
+    <textarea id="l1-input" rows="2" maxlength="60" aria-label="輸入評論">推！推薦給我討厭的人。</textarea>
     <div class="row">
       <button class="btn" id="l1-run">讓字典判斷</button>
+      <span class="muted" style="font-size:14px">提示：</span>
+      <div class="chips">
+        <span class="chip" style="cursor:default">反諷</span><span class="chip" style="cursor:default">否定句</span>
+        <span class="chip" style="cursor:default">網路用語</span><span class="chip" style="cursor:default">表情符號</span>
+        <span class="chip" style="cursor:default">先誇後罵</span>
+      </div>
     </div>
   </div>
 
@@ -217,11 +274,11 @@ table.topics { width: 100%; border-collapse: collapse; }
     <p class="verdict" id="l1-verdict">—</p>
     <div class="tokens" id="l1-tokens"></div>
     <p class="score-line" id="l1-score"></p>
-    <p class="note" style="margin-top:12px"><span id="l1-method">方法：① 用瀏覽器內建的中文斷詞（Intl.Segmenter）把句子切成詞（底線就是切出來的詞）；② 每個詞拿去查情緒詞典，正面詞 +1、負面詞 −1；③ 加總，大於 0 判正面、小於 0 判負面、等於 0 判中性。</span><span id="l1-dictnote">這裡用的是 NTUSD（台大情緒詞典）。</span> <a href="#ref" style="color:var(--lime)">方法與出處</a></p>
+    <p class="note" style="margin-top:12px"><span id="l1-method">方法：① 用瀏覽器內建的中文斷詞（Intl.Segmenter）把句子切成詞（底線就是切出來的詞）；② 每個詞拿去查情緒詞典，正面詞 +1、負面詞 −1；③ 加總，大於 0 判正面、小於 0 判負面、等於 0 判中性。</span><span id="l1-dictnote">這裡用的是教學用的簡化字典，實務上常用 NTUSD（台大情緒詞典）等正式詞典。</span> <a href="#ref" style="color:var(--lime)">方法與出處</a></p>
   </div>
 
   <div class="truth hide-present">
-    <p style="font-weight:700">你覺得這句話的情緒是？</p>
+    <p style="font-weight:700">你覺得這句話的正確答案是？</p>
     <div class="seg" id="l1-truth">
       <button class="pos" data-v="pos" aria-pressed="false">正面</button>
       <button class="neu" data-v="neu" aria-pressed="false">中性</button>
@@ -261,7 +318,7 @@ table.topics { width: 100%; border-collapse: collapse; }
   </div>
 
   <div class="section">
-    <div class="label"><h3>02　逐則分類</h3><span class="muted" style="font-size:14px">示範資料：虛構的拉麵店評論</span></div>
+    <div class="label"><h3>02　逐則分類</h3><span class="muted" style="font-size:14px">真實資料：Google 地圖多家麥當勞分店的評論</span></div>
     <div class="tbl-wrap">
       <table class="reviews">
         <thead><tr><th>#</th><th>評論</th><th>你的分類</th><th>AI 分類</th></tr></thead>
@@ -282,20 +339,32 @@ table.topics { width: 100%; border-collapse: collapse; }
   <div class="panel-head">
     <p class="eyebrow">Lab 03 · 20 min · 小組實戰</p>
     <h2>從問題到洞察</h2>
-    <p>照著五個步驟走一次，最後用一句話報告你們的發現。</p>
+    <p>選一個角色，照著五個步驟走一次，最後用一句話報告你們的發現。</p>
   </div>
 
   <div class="steps">
     <div class="step"><p class="sn">01</p><div class="step-body">
-      <h3>界定問題</h3>
-      <p class="muted">好問題 = 對象 + 時間 + 面向</p>
-      <input type="text" id="l3-q" value="這間拉麵店的負評，主要在抱怨什麼？">
+      <h3>選角色，寫下問題</h3>
+      <p class="muted">先決定你要回答什麼，再去看資料。好問題 = 對象 + 面向 + 目的</p>
+      <div class="ds" id="l3-ds" role="group" aria-label="選擇角色"></div>
+      <p class="scenario" id="l3-scenario"></p>
+      <input type="text" id="l3-q" maxlength="80" placeholder="你們的問題，例如：哪一類的抱怨最多？">
+      <div class="row"><button class="btn" id="l3-get">拿到資料</button><span class="status" id="l3-get-msg"></span></div>
     </div></div>
 
+    <div id="l3-work" hidden>
     <div class="step"><p class="sn">02</p><div class="step-body">
-      <h3>看資料</h3>
+      <h3>看資料（EDA 探索式資料分析）</h3>
       <p class="muted" id="l3-data-desc"></p>
-      <textarea id="l3-data" rows="7"></textarea>
+      <p class="note">先想一想：<b>這份資料回答得了你們的問題嗎？</b>回答不了的話，回到 01 修改問題。</p>
+      <div class="eda">
+        <div class="eda-card"><p class="cap">評論則數</p><p class="eda-big" id="eda-n">0</p><p class="cap" id="eda-n-note"></p></div>
+        <div class="eda-card"><p class="cap">星等分布</p><div id="eda-stars"></div><p class="cap" id="eda-stars-note"></p></div>
+        <div class="eda-card"><p class="cap">評論長度</p><div id="eda-len"></div></div>
+        <div class="eda-card"><p class="cap">高頻詞前 10 名</p><div id="eda-words" class="eda-words"></div><p class="cap">用瀏覽器斷詞，去掉「真的」「覺得」這類常見詞</p></div>
+      </div>
+      <p class="note">高頻詞就像 Google 評論上方那排標籤：看得出大家常提什麼，但看不出好壞，也還沒歸類。</p>
+      <textarea id="l3-data" rows="7" aria-label="評論資料"></textarea>
     </div></div>
 
     <div class="step"><p class="sn">03</p><div class="step-body">
@@ -306,8 +375,9 @@ table.topics { width: 100%; border-collapse: collapse; }
         <label><input type="checkbox" id="c-rep" checked>壓縮重複字（～～～）</label>
         <label><input type="checkbox" id="c-emoji">移除表情符號</label>
         <label><input type="checkbox" id="c-dup" checked>刪除重複評論</label>
-        <label><input type="checkbox" id="c-short" checked>刪除少於 3 個字的評論</label>
+        <label><input type="checkbox" id="c-short">刪除少於 3 個字的評論</label>
       </div>
+      <p class="note">想一想：「讚」「好喝」這種短評論該刪嗎？勾選前後，看看下面的情感分布和主題表各變了多少。</p>
       <div class="preview">
         <div><p class="cap" id="l3-before-cap">清理前</p><pre id="l3-before"></pre></div>
         <div><p class="cap" id="l3-after-cap">清理後</p><pre id="l3-after"></pre></div>
@@ -319,20 +389,27 @@ table.topics { width: 100%; border-collapse: collapse; }
       <div class="row"><button class="btn" id="l3-run">開始分析</button><span class="status">AI 結果已事先跑好</span></div>
       <div id="l3-results" hidden>
         <div class="section">
-          <p class="eyebrow" style="color:var(--muted)">情感分布</p>
+          <p class="eyebrow" style="color:var(--muted)">情感分布（每則評論的整體情感）</p>
           <div class="bars" id="l3-bars"></div>
         </div>
         <div class="section" style="margin-top:28px">
           <p class="eyebrow" style="color:var(--muted)">主題 × 負評</p>
-          <div class="tbl-wrap"><table class="topics"><thead><tr><th>主題</th><th>則數</th><th>負評</th><th>負評比例</th></tr></thead><tbody id="l3-topics"></tbody></table></div>
+          <div class="tbl-wrap"><table class="topics"><thead><tr><th>主題</th><th>提及次數</th><th>負評</th><th>負評比例</th></tr></thead><tbody id="l3-topics"></tbody></table></div>
+          <p class="note" style="margin-top:10px" id="l3-topic-note"></p>
+        </div>
+        <div class="section" style="margin-top:28px">
+          <details class="l3-detail"><summary>抽查：看每一則評論 AI 怎麼標</summary>
+            <div class="tbl-wrap"><table class="l3-rows"><tbody id="l3-rows"></tbody></table></div>
+          </details>
         </div>
       </div>
     </div></div>
 
     <div class="step"><p class="sn">05</p><div class="step-body">
       <h3>提供洞察</h3>
-      <p class="insight-fill">我們發現 <input type="text" id="l3-i1" placeholder="等待時間的負評最多">，<br>所以建議 <input type="text" id="l3-i2" placeholder="尖峰時段開放線上取號">。</p>
+      <p class="insight-fill">我們發現 <input type="text" id="l3-i1" placeholder="哪個主題的負評最多？比例多高？">，<br>所以建議 <input type="text" id="l3-i2" placeholder="具體要改善什麼？">。</p>
     </div></div>
+    </div>
   </div>
 </section>
 
@@ -419,12 +496,13 @@ SOFTWARE.</pre>
 
     <section>
       <h3>AI 分析結果</h3>
-      <p>上機二、上機三中「AI 的答案」是事先用 Claude（Anthropic）分析後放進網頁的，不是即時產生。AI 的判斷不一定正確，僅供課堂比較使用。</p>
+      <p>上機二、上機三中「AI 的答案」是事先用 Claude（Anthropic）分析後放進網頁的，不是即時產生。上機三的每則評論可以有多個主題，每個主題各自標上正面、中性或負面（面向情感分析）。AI 的判斷不一定正確，僅供課堂比較使用。</p>
     </section>
 
     <section>
       <h3>評論資料</h3>
-      <p>上機二、上機三的評論是為了教學編寫的範例，不是真實店家或使用者的評論。</p>
+      <p>上機二：取自 Google 地圖上多家麥當勞分店的公開評論，混合不同分店，並已移除留言者姓名、頭像等資訊，僅供課堂教學使用。</p>
+      <p>上機三：飯店、手搖飲店、電影院三份資料，取自 Google 地圖上多家店的公開評論，混合不同店家，內容經節錄，部分文字略有修改，並已移除留言者資訊。每份另外加入約 9 則講者編寫的教學用資料（太短的評論、重複貼文、網址、標籤、廣告），用來練習資料清理。</p>
     </section>
   </div>
 </section>
@@ -695,14 +773,29 @@ setInterval(() => { if (!$('lab1').hidden) refreshBoard(); }, CONFIG.BOARD_REFRE
 
 /* ===================== LAB 2 ===================== */
 /* AI 結果：事先由 Claude 分析，主題由 AI 自行歸納 */
+/* 上機二資料：Google 地圖多家麥當勞分店的公開評論（已移除留言者資訊）。
+   每筆：[評論, [AI 標的主題（一則可以有好幾個）]]；AI 結果由 Claude 事先分析 */
 const L2 = [
-  ['湯頭很濃，麵條Q彈', '餐點口味'], ['排隊排了一個多小時', '等待時間'], ['老闆很熱情，會主動介紹', '服務態度'],
-  ['一碗兩百多，有點貴', '價格'], ['上菜超慢，等到肚子餓扁', '等待時間'], ['叉燒軟嫩入口即化', '餐點口味'],
-  ['店裡很擠，座位很小', '用餐環境'], ['店員態度冷淡，問問題愛理不理', '服務態度'], ['溏心蛋煮得剛好', '餐點口味'],
-  ['CP 值普通，份量偏少', '價格'], ['週末人潮多，建議平日來', '等待時間'], ['湯太鹹了，喝完一直想喝水', '餐點口味'],
-  ['環境乾淨，餐具也很整齊', '用餐環境'], ['加麵免費，很佛心', '價格'], ['外帶要等 40 分鐘', '等待時間'],
-  ['店員很有禮貌', '服務態度'], ['麵有點太硬', '餐點口味'], ['價格合理，以台北來說不算貴', '價格'],
-  ['冷氣不太涼，吃得滿身汗', '用餐環境'], ['結帳的時候算錯錢', '服務態度']
+  ['不知道是員工訓練不到位還是一直都是同一批員工', ['服務態度']],
+  ['不大間，但很多座位，整間店面都很乾淨，出餐速度極快。', ['用餐環境', '出餐狀況']],
+  ['趕時間的絕對不要去，會被急哭', ['出餐狀況']],
+  ['手機App訂餐方便', ['便利性']],
+  ['插隊的人，還讓他先結，排隊根本沒意義。', ['服務態度']],
+  ['餐點出錯！量跟品質很不一定', ['餐點品質', '出餐狀況']],
+  ['超難停車', ['便利性']],
+  ['內用杯很髒 詢問可以換外帶杯嗎', ['用餐環境']],
+  ['服務佳 環境乾淨舒適 感謝🙏', ['服務態度', '用餐環境']],
+  ['要開不開的……真是太扯了', ['便利性']],
+  ['永遠都很快又很親切溫柔', ['出餐狀況', '服務態度']],
+  ['喜歡這邊的用餐氛圍，用餐空間寬敞', ['用餐環境']],
+  ['常常拿錯不然就是少給😓😓😓', ['出餐狀況']],
+  ['我建議總公司來這店面稽核員工是否有照標準sop出餐作業，出餐品質和別間完全不一樣', ['餐點品質', '出餐狀況']],
+  ['點餐人員、取餐櫃檯的服務人員態度超好笑容也很親切，100分！！', ['服務態度']],
+  ['音樂太吵了再加上人聲, 音樂可以小聲點嗎,耳朵受不了', ['用餐環境']],
+  ['有停車位，餐廳乾淨', ['便利性', '用餐環境']],
+  ['動作很慢 餐點一直拖 店員很忙不理人', ['出餐狀況', '服務態度']],
+  ['打球前吃一下，補充能量', ['其他']],
+  ['餐沒辦法出不要接平台', ['出餐狀況']]
 ];
 let l2Topics = [];
 let l2Picks = L2.map(() => '');
@@ -722,10 +815,10 @@ function renderTopics() {
 function renderRows() {
   const opts = ['<option value="">— 選擇 —</option>', ...l2Topics.map(t => `<option>${esc(t)}</option>`), '<option>其他</option>'].join('');
   $('l2-rows').innerHTML = L2.map(([r, ai], i) => {
-    const cls = l2Revealed && l2Picks[i] ? (l2Picks[i] === ai ? 'same' : 'diff') : '';
+    const cls = l2Revealed && l2Picks[i] ? (ai.includes(l2Picks[i]) ? 'same' : 'diff') : '';
     return `<tr class="${cls}"><td class="num">${String(i + 1).padStart(2, '0')}</td><td>${esc(r)}</td>
       <td><select data-i="${i}" aria-label="第 ${i + 1} 則的分類">${opts}</select></td>
-      <td class="ai">${l2Revealed ? esc(ai) : '<span class="hiddenai">？？？</span>'}</td></tr>`;
+      <td class="ai">${l2Revealed ? ai.map(esc).join('、') : '<span class="hiddenai">？？？</span>'}</td></tr>`;
   }).join('');
   $('l2-rows').querySelectorAll('select').forEach(s => {
     s.value = l2Picks[+s.dataset.i] || '';
@@ -737,8 +830,8 @@ function renderTally() {
   const done = l2Picks.filter(Boolean).length;
   const items = [`<div><span class="big">${done}/${L2.length}</span><span class="muted">已分類</span></div>`];
   if (l2Revealed) {
-    const same = L2.filter(([, ai], i) => l2Picks[i] === ai).length;
-    const aiTopics = [...new Set(L2.map(([, ai]) => ai))];
+    const same = L2.filter(([, ai], i) => ai.includes(l2Picks[i])).length;
+    const aiTopics = [...new Set(L2.flatMap(([, ai]) => ai))];
     items.push(`<div><span class="big" style="color:var(--lime)">${same}</span><span class="muted">跟 AI 一樣</span></div>`);
     items.push(`<div><span class="big">${aiTopics.length}</span><span class="muted">AI 的主題：${aiTopics.map(esc).join('、')}</span></div>`);
   }
@@ -755,45 +848,216 @@ $('l2-reveal').addEventListener('click', () => {
   l2Revealed = !l2Revealed;
   $('l2-reveal').textContent = l2Revealed ? '隱藏 AI 的分法' : '揭曉 AI 的分法';
   $('l2-note').textContent = l2Revealed
-    ? 'AI 自己歸納出 5 個主題。綠色是你們分得一樣的，橘色是不一樣的。主題名稱不同的，就看意思是不是相同。'
+    ? 'AI 歸納出 5 個主題，再加一個「其他」。有 7 則評論同時講了兩件事，AI 兩個主題都列出來，你選的是其中任何一個都算一樣（綠色）。主題名稱不同的，就看意思是不是相同。'
     : 'AI 的結果已經事先跑好（由 Claude 分析）。分完之後按「揭曉」，跟你一樣的會變綠色，不一樣的會變橘色。';
   renderRows();
 });
 renderTopics(); renderRows();
 
 /* ===================== LAB 3 ===================== */
-/* 範例資料與 AI 結果（事先由 Claude 分析）。換成你的資料時，整段替換。
-   每筆：[原始評論, AI 主題, AI 情感 pos/neu/neg] */
-const L3 = {
-  desc: '範例資料：12 則虛構的拉麵店評論。',
-  rows: [
-    ['‼️超好吃der～～～ 推推推 https://bit.ly/abc #美食 #台北', '餐點口味', 'pos'],
-    ['排隊排了一個多小時，真是好棒棒', '等待時間', 'neg'],
-    ['湯頭很濃，麵條Q彈 😋', '餐點口味', 'pos'],
-    ['上菜超慢', '等待時間', 'neg'],
-    ['上菜超慢', '等待時間', 'neg'],
-    ['一碗兩百多，有點貴', '價格', 'neg'],
-    ['老闆很熱情 #拉麵', '服務態度', 'pos'],
-    ['讚', '其他', 'pos'],
-    ['店員態度很差，結帳還算錯錢', '服務態度', 'neg'],
-    ['叉燒好吃，下次還會再來', '餐點口味', 'pos'],
-    ['外帶要等 40 分鐘，很失望 https://maps.app/xyz', '等待時間', 'neg'],
-    ['環境乾淨，價格合理', '用餐環境', 'pos']
-  ]
+const P = 'pos', U = 'neu', N = 'neg';
+/* 三份資料，AI 結果事先由 Claude 分析。
+   每筆：[評論, AI 整體情感, [[主題, 這個主題的情感], ...], 星等（null = 教學用資料，沒有星等）]
+   一則評論可以提到好幾個主題，每個主題各自有正負面（面向情感分析）。
+   主題寫「其他」代表沒有提到具體主題。 */
+const DATASETS = {
+  hotel: {
+    name: '飯店經理',
+    scenario: '你是一家飯店的經理。最近 Google 評分一直往下掉，老闆要你找出原因，下週開會報告。',
+    source: '飯店',
+    rows: [
+      ['離捷運站近，吃東西方便，就是不好預定。', P, [['地點交通', P], ['訂房與入住', N]], 5],
+      ['可以用Google地圖輕鬆查看巴士時刻表。', U, [['其他', U]], 4],
+      ['房間滿大的.服務態度好.', P, [['房間設施', P], ['服務態度', P]], 5],
+      ['不錯', P, [['其他', P]], 4],
+      ['友善的停車空間，感覺良好', P, [['停車', P]], 5],
+      ['這次入住整體經驗相當失望，尤其是客房安排及主管處理客訴的態度，讓人難以接受。', N, [['訂房與入住', N], ['服務態度', N]], 1],
+      ['週圍花圃步道感覺很久未清掃，清潔服務很不佳', N, [['清潔衛生', N]], 2],
+      ['打卡 https://www.instagram.com/p/xxxxx', U, [['其他', U]], null],
+      ['雖然外表不怎麼起眼，但是房間設備確實有點驚艷，C P值超高👍', P, [['房間設施', P], ['價格', P]], 4],
+      ['‼️地點不符，很偏僻，當日聯絡時給的是另一個地址！', N, [['地點交通', N], ['訂房與入住', N]], 1],
+      ['飛機起降聲很大，11:30入住。非常打壞出國出遊的興致！！！！！！非常非常的糟糕👎🏻', N, [['噪音與睡眠', N]], 1],
+      ['讚', P, [['其他', P]], 5],
+      ['晚上睡覺真的很考驗定力XD, 早餐還不錯，但隔音真的差。', U, [['噪音與睡眠', N], ['早餐', P]], 3],
+      ['網路爛到不行 一直斷每跑一個頁面都要重連一次🙄🙄🙄', N, [['房間設施', N]], 1],
+      ['半夜被熱醒', N, [['房間設施', N]], 2],
+      ['房間滿大的.服務態度好.', P, [['房間設施', P], ['服務態度', P]], 5],
+      ['飯店位置和設施都不錯，但工作人員在辦理入住時對各項設施的介紹不夠充分。', U, [['地點交通', P], ['房間設施', P], ['訂房與入住', N]], 3],
+      ['服務人員很親切，也睡得很好，之後有機會，也會再次光臨', P, [['服務態度', P], ['噪音與睡眠', P]], 5],
+      ['想要訂房便宜的私訊我 加LINE有優惠 https://bit.ly/xxxxx', U, [['其他', U]], null],
+      ['飯店設施很棒~ 員工很友善', P, [['房間設施', P], ['服務態度', P]], 5],
+      ['服務人員親切態度好，但蠻糟糕的住宿環境，。', N, [['服務態度', P], ['房間設施', N]], 1],
+      ['衞生情況好差，雖然價錢便宜，但一定不會再入住', N, [['清潔衛生', N], ['價格', P]], 1],
+      ['推推推推推', P, [['其他', P]], 5],
+      ['地點很不好，只適合觀光客，也離捷運站有距離，停車也不好停，房間很小，隔音也不好', N, [['地點交通', N], ['停車', N], ['房間設施', N], ['噪音與睡眠', N]], 3],
+      ['週邊景點和商店眾多，交通便利，非常方便！', P, [['地點交通', P]], 5],
+      ['#週末小旅行 #打卡', U, [['其他', U]], null],
+      ['警告！千萬不要來！不要來！不要來！前台職員不專業、安排的房間非常殘破，且污糟，設施更發生故障等等的問題是多不勝數。', N, [['服務態度', N], ['房間設施', N], ['清潔衛生', N]], 1],
+      ['整體不錯，清潔度高，員工有禮貌及熱心幫忙。', P, [['清潔衛生', P], ['服務態度', P]], 5],
+      ['👍👍👍', P, [['其他', P]], 5],
+      ['飯店服務人員親切，設施乾淨，附近有全聯、便利超市。', P, [['服務態度', P], ['清潔衛生', P], ['地點交通', P]], 5],
+      ['房間超級小的，隔音效果又差，整晚都可以聽到外面的車聲，浴室也很小', N, [['房間設施', N], ['噪音與睡眠', N]], 1],
+      ['在訂房網站上寫明可停車，但是訂房後才告知網路訂房不含停車', N, [['停車', N], ['訂房與入住', N]], 1],
+      ['機器無法使用，無法自行辦理入住手續......接待處根本沒有人......服務非常差。', N, [['訂房與入住', N], ['服務態度', N]], 1],
+      ['房間超級小的，隔音效果又差，整晚都可以聽到外面的車聲，浴室也很小', N, [['房間設施', N], ['噪音與睡眠', N]], 1],
+      ['這次入住整體還不錯，房間整理得算乾淨，住起來也蠻舒服的，休息品質不錯。', P, [['清潔衛生', P], ['噪音與睡眠', P]], 5]
+    ]
+  },
+  drink: {
+    name: '手搖飲店長',
+    scenario: '你是一家手搖飲店的店長。新店開幕三個月了，你想知道客人最不滿意的是什麼，好決定下個月先改善哪裡。',
+    source: '手搖飲店',
+    rows: [
+      ['紅茶味道很剛好 是我喜歡的，但珍珠怎麼爛爛糊糊的(＞人＜;)', U, [['茶飲口味', P], ['珍珠配料', N]], 3],
+      ['餐點我知道服務、氣氛不知道🤷⋯⋯', U, [['其他', U]], 5],
+      ['覺得鮮奶跟茶味都偏淡，有點悲傷😮‍💨', N, [['茶飲口味', N]], 4],
+      ['好喝', P, [['茶飲口味', P]], 5],
+      ['對鮮奶茶超級失望⋯⋯完全沒有茶味，喝起來超痛苦，一般來說應該有點茶香味但完全沒有。', N, [['茶飲口味', N]], 1],
+      ['飲料很好喝....但今天的外送不知道是出了什麼狀況，飲料杯上是貼1點的單子，但送到時已經三點多...熱飲完全變冰冰涼涼的@“@', N, [['茶飲口味', P], ['外送', N]], 1],
+      ['今天放學來買飲料，買到微酸掉的珍珠，是新口味嗎…….🤣', N, [['珍珠配料', N]], 2],
+      ['飲料品質都是在符合連鎖店的標準中，店員的服務態度也還不錯', P, [['茶飲口味', P], ['服務態度', P]], 4],
+      ['打卡 https://www.instagram.com/p/xxxxx', U, [['其他', U]], null],
+      ['服務優良 推薦 🩷', P, [['服務態度', P]], 5],
+      ['飲料全從杯底的漏洞流光了🥲還弄的整個冰箱都是', N, [['製作出錯', N]], 1],
+      ['店員服務親切、態度好很有活力！', P, [['服務態度', P]], 5],
+      ['讚', P, [['其他', P]], 5],
+      ['飲品穩定好喝！', P, [['茶飲口味', P]], 5],
+      ['購買前已先詢問需要等待的時間，他說了10分鐘！ 我們等20分！結果飲料還被漏掉了', N, [['出餐速度', N], ['製作出錯', N]], 1],
+      ['今天這麼冷，點溫的喝一口是冷的😱', N, [['製作出錯', N]], 1],
+      ['想要飲料便宜的私訊我 加LINE有優惠 https://bit.ly/xxxxx', U, [['其他', U]], null],
+      ['工作人員速度太慢...感覺無視排隊的人潮...', N, [['出餐速度', N], ['服務態度', N]], 1],
+      ['珍珠太甜，動作太慢', N, [['珍珠配料', N], ['出餐速度', N]], 4],
+      ['店員服務親切、態度好很有活力！', P, [['服務態度', P]], 5],
+      ['飲料很好喝，老闆很親切，非常推薦~', P, [['茶飲口味', P], ['服務態度', P]], 5],
+      ['紅茶有點澀', N, [['茶飲口味', N]], 4],
+      ['推推推推推', P, [['其他', P]], 5],
+      ['員工教育訓練請加強😑', N, [['服務態度', N]], 1],
+      ['地圖寫10:30開門，實際上10:40還沒開也沒人接電話', N, [['營業時間', N]], 1],
+      ['👍服務好速度快～', P, [['服務態度', P], ['出餐速度', P]], 5],
+      ['#下午茶 #手搖飲', U, [['其他', U]], null],
+      ['天啊‼️真的很好喝，服務人員態度很讚🤩推薦大家去喝！！', P, [['茶飲口味', P], ['服務態度', P]], 5],
+      ['服務人員態度佳！出餐速度很快，飲料也很好喝～', P, [['服務態度', P], ['出餐速度', P], ['茶飲口味', P]], 5],
+      ['會苦澀…不好喝..正常不會吧', N, [['茶飲口味', N]], 1],
+      ['👍👍👍', P, [['其他', P]], 5],
+      ['茶味淡，很像水...........', N, [['茶飲口味', N]], 3],
+      ['會苦澀…不好喝..正常不會吧', N, [['茶飲口味', N]], 1],
+      ['飲料還不錯喝速度也很快', P, [['茶飲口味', P], ['出餐速度', P]], 4]
+    ]
+  },
+  cinema: {
+    name: '影城店長',
+    scenario: '你是一家影城的店長。總部要每家影城提出明年的改善計畫，預算有限，你要決定先改哪裡。',
+    source: '電影院',
+    rows: [
+      ['環境好，電影選擇多，交通方便', P, [['影廳設備', P], ['交通', P]], 5],
+      ['電影還沒放完就給我亂開門開燈...', N, [['放映管理', N]], 1],
+      ['等候區休息座位超少的🙄👎買了套餐食物也沒地方放', N, [['等候空間', N]], 3],
+      ['好看', P, [['其他', P]], 5],
+      ['硬體、價位等一切都好，但餐點處的員工服務需要再提升', N, [['影廳設備', P], ['價格', P], ['服務人員', N]], 1],
+      ['座位很乾淨舒適，太享受了。外面還有很多插座可供充電，超讚👍。', P, [['清潔衛生', P], ['影廳設備', P], ['等候空間', P]], 5],
+      ['整體環境算舒服，觀影體驗還不錯，但工作人員的服務動線有待改進。', N, [['影廳設備', P], ['服務人員', N]], 2],
+      ['打卡 https://www.instagram.com/p/xxxxx', U, [['其他', U]], null],
+      ['空間還可以，看電影椅子高低適中前面的不會檔到螢幕～整體還不錯', P, [['影廳設備', P]], 3],
+      ['不要再用那個網頁了，根本就打不開，廣告多到三層，有彈窗，有選單，有內文穿插，就是沒有說電影演的啥，笑死', N, [['購票系統', N]], 1],
+      ['買票規劃出順序，方便快速，動線清楚', P, [['購票系統', P]], 4],
+      ['讚', P, [['其他', P]], 5],
+      ['線上購票不友善', N, [['購票系統', N]], 1],
+      ['影廳內的衛生有問題，看完電影被跳蚤咬，有點擔心。', N, [['清潔衛生', N]], 2],
+      ['APP超爛！忘記密碼收到驗證信「重設驗證碼」照著打竟然是錯的？_？', N, [['購票系統', N]], 1],
+      ['想要電影票便宜的私訊我 加LINE有優惠 https://bit.ly/xxxxx', U, [['其他', U]], null],
+      ['設備乾淨新穎舒服寬敞的影廳', P, [['影廳設備', P], ['清潔衛生', P]], 5],
+      ['設備與環境都很新，還不錯', P, [['影廳設備', P]], 4],
+      ['服務人員耐心又友善提供建議，真的非常感謝🥺❤️❤️ 附帶的爆米花味道比較普通', P, [['服務人員', P], ['餐飲', U]], 5],
+      ['推推推推推', P, [['其他', P]], 5],
+      ['爆米花鹹要死，可樂沒氣，沒放冰塊不冰', N, [['餐飲', N]], 1],
+      ['椅子是不是都沒清潔，看完電影跟同行友人都身體癢', N, [['清潔衛生', N]], 1],
+      ['交通方便、離家近、設備新', P, [['交通', P], ['影廳設備', P]], 4],
+      ['#電影 #約會', U, [['其他', U]], null],
+      ['影廳內外空調太強，看電影期間一直有強風冷氣吹頭吹身體，很不舒服。', N, [['影廳設備', N]], 1],
+      ['線上購票不友善', N, [['購票系統', N]], 1],
+      ['就單純看個電影，算是CP很好', P, [['價格', P]], 5],
+      ['設備也蠻乾淨舒服！可以使用APP來訂票，很方便！', P, [['影廳設備', P], ['清潔衛生', P], ['購票系統', P]], 5],
+      ['👍👍👍', P, [['其他', P]], 5],
+      ['那個app可以再設計爛一點沒關係', N, [['購票系統', N]], 2],
+      ['蠻乾凈的環境，外面有等候區有沙發可以坐', P, [['清潔衛生', P], ['等候空間', P]], 5],
+      ['人員明顯不足，不是很懂這麼大一個櫃檯只有一個櫃檯上班在幹嘛', N, [['服務人員', N]], 1],
+      ['椅子是不是都沒清潔，看完電影跟同行友人都身體癢', N, [['清潔衛生', N]], 1],
+      ['場地很大，看電影環境舒適"٩(ｰ̀ꇴｰ́)，但當天買牛肉捲 進場後發現裡面都是冷的，滿失望的', U, [['影廳設備', P], ['餐飲', N]], 4]
+    ]
+  }
 };
-$('l3-data-desc').textContent = L3.desc;
-$('l3-data').value = L3.rows.map(r => r[0]).join('\n');
-const AI3 = new Map(L3.rows.map(r => [r[0].trim(), { topic: r[1], sent: r[2] }]));
+
+const AI3 = new Map(), STAR3 = new Map();
+Object.values(DATASETS).forEach(d => d.rows.forEach(([raw, sent, asp, star]) => { AI3.set(raw.trim(), { sent, asp }); if (star) STAR3.set(raw.trim(), star); }));
+
+/* EDA：在清理之前先認識資料 */
+const STOP = new Set(['真的','覺得','感覺','還是','非常','這次','今天','但是','就是','可以','沒有','什麼','不會','一般','應該','根本','不是','這麼','已經','結果','一樣','有點','比較','下次','整體','一直','還有','而且','因為','所以','如果','時候','一個','這個','那個','自己','我們','他們','大家','不錯','還不錯','完全','超級','實際','當天','當日','有機會','instagram','https','www','xxxxx']);
+function edaBars(items, max) {
+  return items.map(([lb, v, cls]) => `<div class="eda-row"><span class="lb">${lb}</span><div class="tr"><div class="fl ${cls || ''}" style="width:${max ? v / max * 100 : 0}%"></div></div><span class="v">${v}</span></div>`).join('');
+}
+function renderEDA() {
+  const raw = $('l3-data').value.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  $('eda-n').textContent = raw.length;
+  const uniq = new Set(raw).size;
+  $('eda-n-note').textContent = uniq < raw.length ? `其中 ${raw.length - uniq} 則和別則一模一樣` : '沒有完全重複的評論';
+  const st = [0, 0, 0, 0, 0]; let noStar = 0;
+  raw.forEach(r => { const s = STAR3.get(r); s ? st[s - 1]++ : noStar++; });
+  $('eda-stars').innerHTML = edaBars([5, 4, 3, 2, 1].map(s => [`${s} 星`, st[s - 1], s >= 4 ? 'hi' : s <= 2 ? 'lo' : '']), Math.max(...st));
+  $('eda-stars-note').textContent = noStar ? `${noStar} 則沒有星等資料` : '';
+  const len = s => [...s.replace(/https?:\/\/\S+/g, '').replace(/\s/g, '')].length;
+  const b = [0, 0, 0, 0];
+  raw.forEach(r => { const n = len(r); b[n <= 3 ? 0 : n <= 10 ? 1 : n <= 30 ? 2 : 3]++; });
+  $('eda-len').innerHTML = edaBars([['≤3 字', b[0], 'lo'], ['4–10', b[1]], ['11–30', b[2]], ['31+', b[3]]], Math.max(...b));
+  const freq = new Map();
+  raw.forEach(r => {
+    const text = r.replace(/https?:\/\/\S+/g, ' ').replace(/#\S+/g, ' ');
+    const segs = SEGMENTER ? [...SEGMENTER.segment(text)].filter(x => x.isWordLike).map(x => x.segment) : [];
+    new Set(segs.map(w => w.toLowerCase()).filter(w => [...w].length >= 2 && !STOP.has(w) && !/^\d+$/.test(w)))
+      .forEach(w => freq.set(w, (freq.get(w) || 0) + 1));          // 同一則評論重複出現只算一次
+  });
+  const top = [...freq.entries()].sort((a, b) => b[1] - a[1]).slice(0, 10);
+  $('eda-words').innerHTML = top.length ? top.map(([w, n]) => `<span>${esc(w)}<b>${n}</b></span>`).join('') : '<span class="muted">這個瀏覽器不支援斷詞</span>';
+}
+let l3Key = '';
+
+function renderRoles() {
+  $('l3-ds').innerHTML = Object.entries(DATASETS).map(([k, d]) =>
+    `<button type="button" data-k="${k}" aria-pressed="${k === l3Key}">${esc(d.name)}</button>`).join('');
+  $('l3-ds').querySelectorAll('button').forEach(b => b.addEventListener('click', () => selectRole(b.dataset.k)));
+}
+function selectRole(k) {
+  if (k === l3Key) return;
+  l3Key = k; const d = DATASETS[k];
+  renderRoles();
+  $('l3-scenario').textContent = d.scenario;
+  $('l3-q').value = '';
+  $('l3-get-msg').textContent = '';
+  $('l3-work').hidden = true;
+  $('l3-results').hidden = true;
+}
+$('l3-get').addEventListener('click', () => {
+  if (!l3Key) { $('l3-get-msg').textContent = '先選一個角色。'; return; }
+  if (!$('l3-q').value.trim()) { $('l3-get-msg').textContent = '先寫下你們的問題，再拿資料。'; $('l3-q').focus(); return; }
+  const d = DATASETS[l3Key];
+  $('l3-get-msg').textContent = '';
+  $('l3-data-desc').textContent = `我們已經幫你收集好 ${d.rows.length} 則${d.source}評論（Google 地圖上多家${d.source}的公開評論，混合不同店家）。裡面有重複、太短、廣告等需要清理的資料。`;
+  $('l3-data').value = d.rows.map(r => r[0]).join('\n');
+  $('l3-results').hidden = true;
+  $('l3-work').hidden = false;
+  renderClean(); renderEDA();
+  $('l3-work').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
 
 function cleanText(l) {
   if ($('c-url').checked) l = l.replace(/https?:\/\/\S+/g, '');
   if ($('c-tag').checked) l = l.replace(/#\S+/g, '');
-  if ($('c-emoji').checked) l = l.replace(/[\p{Extended_Pictographic}\u{FE0F}]/gu, '');
+  if ($('c-emoji').checked) l = l.replace(/[\p{Extended_Pictographic}\u{FE0F}\u{200D}]/gu, '');
   if ($('c-rep').checked) l = l.replace(/(.)\1{2,}/gu, '$1');
   return l.replace(/\s+/g, ' ').trim();
 }
 function cleanRows() {
-  let rows = $('l3-data').value.split(/\r?\n/).map(l => l.trim()).filter(Boolean).map(raw => ({ raw, text: cleanText(raw) }));
+  let rows = $('l3-data').value.split(/\r?\n/).map(l => l.trim()).filter(Boolean)
+    .map(raw => ({ raw, text: cleanText(raw) })).filter(r => r.text);   // 清完變空白的一定刪
   if ($('c-short').checked) rows = rows.filter(r => [...r.text.replace(/\s/g, '')].length >= 3);
   if ($('c-dup').checked) { const seen = new Set(); rows = rows.filter(r => !seen.has(r.text) && seen.add(r.text)); }
   return rows;
@@ -808,12 +1072,14 @@ function renderClean() {
   return rows;
 }
 ['c-url', 'c-tag', 'c-rep', 'c-emoji', 'c-dup', 'c-short'].forEach(id => $(id).addEventListener('change', () => { renderClean(); if (!$('l3-results').hidden) runLab3(); }));
-$('l3-data').addEventListener('input', renderClean);
+$('l3-data').addEventListener('input', () => { renderClean(); renderEDA(); if (!$('l3-results').hidden) runLab3(); });
 
 function runLab3() {
   const rows = renderClean().map(r => {
     const ai = AI3.get(r.raw);
-    return { ...r, topic: ai ? ai.topic : '未事先分析', sent: ai ? ai.sent : analyzeDict(r.text).label };
+    if (ai) return { ...r, ...ai, known: true };
+    const label = analyzeDict(r.text).label;                         // 沒有事先分析：情感只能用字典判斷
+    return { ...r, sent: label, asp: [['未事先分析', label]], known: false };
   });
   const n = rows.length || 1;
   const c = { pos: 0, neu: 0, neg: 0 }; rows.forEach(r => c[r.sent]++);
@@ -821,15 +1087,23 @@ function runLab3() {
     <div class="bar-row"><span class="bl">${LABEL[k]}</span>
       <div class="bar-track"><div class="bar-fill ${k}" style="width:${(c[k] / n * 100).toFixed(1)}%"></div></div>
       <span class="bv">${c[k]} · ${Math.round(c[k] / n * 100)}%</span></div>`).join('');
-  const t = {};
-  rows.forEach(r => { t[r.topic] = t[r.topic] || { n: 0, neg: 0 }; t[r.topic].n++; if (r.sent === 'neg') t[r.topic].neg++; });
+  const t = {}; let noTopic = 0;
+  rows.forEach(r => {
+    const asp = r.asp.filter(([tp]) => tp !== '其他');
+    if (!asp.length) { noTopic++; return; }
+    asp.forEach(([tp, s]) => { t[tp] = t[tp] || { n: 0, neg: 0 }; t[tp].n++; if (s === 'neg') t[tp].neg++; });
+  });
   const list = Object.entries(t).sort((a, b) => b[1].neg - a[1].neg || b[1].n - a[1].n);
   $('l3-topics').innerHTML = list.map(([k, v], i) =>
     `<tr class="${i === 0 && v.neg > 0 ? 'top' : ''}"><td>${esc(k)}</td><td class="n">${v.n}</td><td class="n">${v.neg}</td><td class="n">${Math.round(v.neg / v.n * 100)}%</td></tr>`).join('');
+  $('l3-topic-note').textContent = `另有 ${noTopic} 則評論沒有提到具體主題（例如「讚」、廣告），沒有算進這張表，但有算進上面的情感分布。一則評論可能同時提到好幾個主題，而且每個主題的好壞可能不同（例如「服務很好，但房間很髒」），所以這張表算的是「提及次數」。`;
+  $('l3-rows').innerHTML = rows.map(r => `<tr><td>${esc(r.text)}${r.known ? '' : ' <span class="muted">（未事先分析，情感由字典判斷）</span>'}</td>
+    <td style="white-space:nowrap"><span class="asp ${r.sent}">${LABEL[r.sent]}</span></td>
+    <td>${r.asp.map(([tp, s]) => `<span class="asp ${s}">${esc(tp === '其他' ? '無具體主題' : tp)} ${s === 'pos' ? '＋' : s === 'neg' ? '－' : '○'}</span>`).join('')}</td></tr>`).join('');
   $('l3-results').hidden = false;
 }
 $('l3-run').addEventListener('click', runLab3);
-renderClean();
+renderRoles();
 
 /* ===================== FEEDBACK ===================== */
 let fbRating = 0;
