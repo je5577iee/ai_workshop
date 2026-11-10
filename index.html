@@ -358,7 +358,7 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
   <div class="panel-head">
     <p class="eyebrow">Lab 03 · 20 min · 小組實戰</p>
     <h2>從問題到洞察</h2>
-    <p>選一個角色，照著五個步驟走一次，最後用一句話報告你們的發現。</p>
+    <p>選一個角色，照著六個步驟走一次，最後用一句話報告你們的發現。</p>
   </div>
 
   <div class="steps">
@@ -373,17 +373,10 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
 
     <div id="l3-work" hidden>
     <div class="step"><p class="sn">02</p><div class="step-body">
-      <h3>看資料（EDA 探索式資料分析）</h3>
+      <h3>拿到資料</h3>
       <p class="muted" id="l3-data-desc"></p>
       <p class="note">先想一想：<b>這份資料回答得了你們的問題嗎？</b>回答不了的話，回到 01 修改問題。</p>
-      <div class="eda">
-        <div class="eda-card"><p class="cap">評論則數</p><p class="eda-big" id="eda-n">0</p><p class="cap" id="eda-n-note"></p></div>
-        <div class="eda-card"><p class="cap">星等分布</p><div id="eda-stars"></div><p class="cap" id="eda-stars-note"></p></div>
-        <div class="eda-card"><p class="cap">評論長度</p><div id="eda-len"></div></div>
-        <div class="eda-card"><p class="cap">高頻詞前 10 名</p><div id="eda-words" class="eda-words"></div><p class="cap">用瀏覽器斷詞，去掉「真的」「覺得」這類常見詞</p></div>
-      </div>
-      <p class="note">高頻詞就像 Google 評論上方那排標籤：看得出大家常提什麼，但看不出好壞，也還沒歸類。</p>
-      <textarea id="l3-data" rows="7" aria-label="評論資料"></textarea>
+<textarea id="l3-data" rows="7" aria-label="評論資料"></textarea>
     </div></div>
 
     <div class="step"><p class="sn">03</p><div class="step-body">
@@ -396,7 +389,7 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
         <label><input type="checkbox" id="c-dup" checked>刪除重複評論</label>
         <label><input type="checkbox" id="c-short">刪除少於 3 個字的評論</label>
       </div>
-      <p class="note">想一想：「讚」「好喝」這種短評論該刪嗎？勾選前後，看看下面的情感分布和主題表各變了多少。</p>
+      <p class="note">想一想：「讚」「好喝」這種短評論該刪嗎？勾選前後，看看下面的 EDA、情感分布和主題表各變了多少。</p>
       <div class="preview">
         <div><p class="cap" id="l3-before-cap">清理前</p><pre id="l3-before"></pre></div>
         <div><p class="cap" id="l3-after-cap">清理後</p><pre id="l3-after"></pre></div>
@@ -404,6 +397,18 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
     </div></div>
 
     <div class="step"><p class="sn">04</p><div class="step-body">
+      <h3>探索資料（EDA）</h3>
+      <p class="muted">清理完，先認識這份資料長什麼樣子，再開始分析。改變上面的清理選項，這裡會跟著變。</p>
+      <div class="eda">
+        <div class="eda-card"><p class="cap">清理後的評論則數</p><p class="eda-big" id="eda-n">0</p><p class="cap" id="eda-n-note"></p></div>
+        <div class="eda-card"><p class="cap">星等分布</p><div id="eda-stars"></div><p class="cap" id="eda-stars-note"></p></div>
+        <div class="eda-card"><p class="cap">評論長度</p><div id="eda-len"></div></div>
+        <div class="eda-card"><p class="cap">高頻詞前 10 名</p><div id="eda-words" class="eda-words"></div><p class="cap">用瀏覽器斷詞，去掉「真的」「覺得」這類常見詞</p></div>
+      </div>
+      <p class="note">高頻詞就像 Google 評論上方那排標籤：看得出大家常提什麼，但看不出好壞，也還沒歸類。</p>
+          </div></div>
+
+    <div class="step"><p class="sn">05</p><div class="step-body">
       <h3>情感 ＋ 主題分析</h3>
       <div class="row"><button class="btn" id="l3-run">開始分析</button><span class="status">AI 結果已事先跑好</span></div>
       <div id="l3-results" hidden>
@@ -425,7 +430,7 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
       </div>
     </div></div>
 
-    <div class="step"><p class="sn">05</p><div class="step-body">
+    <div class="step"><p class="sn">06</p><div class="step-body">
       <h3>提供洞察</h3>
       <p class="muted">你不是店家，怎麼知道要改什麼？答案在顧客的原文裡：點上面表格的主題，看負評實際在抱怨什麼，再從裡面找出具體的問題。</p>
       <p class="insight-fill">我們發現 <input type="text" id="l3-i1" placeholder="哪個主題的負評最多？比例多高？">，<br>所以建議 <input type="text" id="l3-i2" placeholder="具體要改善什麼？">。</p>
@@ -1018,12 +1023,14 @@ function edaBars(items, max) {
   return items.map(([lb, v, cls]) => `<div class="eda-row"><span class="lb">${lb}</span><div class="tr"><div class="fl ${cls || ''}" style="width:${max ? v / max * 100 : 0}%"></div></div><span class="v">${v}</span></div>`).join('');
 }
 function renderEDA() {
-  const raw = $('l3-data').value.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-  $('eda-n').textContent = raw.length;
+  const all = $('l3-data').value.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  const rows = cleanRows();
+  const raw = rows.map(r => r.text);
+  $('eda-n').textContent = rows.length;
   const uniq = new Set(raw).size;
-  $('eda-n-note').textContent = uniq < raw.length ? `其中 ${raw.length - uniq} 則和別則一模一樣` : '沒有完全重複的評論';
+  $('eda-n-note').textContent = `清理前 ${all.length} 則` + (uniq < raw.length ? `，還有 ${raw.length - uniq} 則和別則一模一樣` : '');
   const st = [0, 0, 0, 0, 0]; let noStar = 0;
-  raw.forEach(r => { const s = STAR3.get(r); s ? st[s - 1]++ : noStar++; });
+  rows.forEach(r => { const s = STAR3.get(r.raw); s ? st[s - 1]++ : noStar++; });
   $('eda-stars').innerHTML = edaBars([5, 4, 3, 2, 1].map(s => [`${s} 星`, st[s - 1], s >= 4 ? 'hi' : s <= 2 ? 'lo' : '']), Math.max(...st));
   $('eda-stars-note').textContent = noStar ? `${noStar} 則沒有星等資料` : '';
   const len = s => [...s.replace(/https?:\/\/\S+/g, '').replace(/\s/g, '')].length;
@@ -1104,7 +1111,7 @@ function renderClean() {
   $('l3-after').textContent = rows.map(r => r.text).join('\n');
   return rows;
 }
-['c-url', 'c-tag', 'c-rep', 'c-emoji', 'c-dup', 'c-short'].forEach(id => $(id).addEventListener('change', () => { renderClean(); if (!$('l3-results').hidden) runLab3(); }));
+['c-url', 'c-tag', 'c-rep', 'c-emoji', 'c-dup', 'c-short'].forEach(id => $(id).addEventListener('change', () => { renderClean(); renderEDA(); if (!$('l3-results').hidden) runLab3(); }));
 $('l3-data').addEventListener('input', () => { renderClean(); renderEDA(); if (!$('l3-results').hidden) runLab3(); });
 
 function runLab3() {
