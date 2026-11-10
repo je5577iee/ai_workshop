@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>文字讀心術 Lab</title>
+<title>AI Workshop - 文字讀心術 Lab</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap">
 <style>
@@ -206,15 +206,9 @@ table.topics { width: 100%; border-collapse: collapse; }
   </div>
 
   <div class="section hide-present">
-    <textarea id="l1-input" rows="2" maxlength="60" aria-label="輸入評論">推！推薦給我討厭的人。</textarea>
+    <textarea id="l1-input" rows="2" maxlength="60" aria-label="輸入評論">不錯喔! 很推薦。</textarea>
     <div class="row">
       <button class="btn" id="l1-run">讓字典判斷</button>
-      <span class="muted" style="font-size:14px">提示：</span>
-      <div class="chips">
-        <span class="chip" style="cursor:default">反諷</span><span class="chip" style="cursor:default">否定句</span>
-        <span class="chip" style="cursor:default">網路用語</span><span class="chip" style="cursor:default">表情符號</span>
-        <span class="chip" style="cursor:default">先誇後罵</span>
-      </div>
     </div>
   </div>
 
@@ -223,11 +217,11 @@ table.topics { width: 100%; border-collapse: collapse; }
     <p class="verdict" id="l1-verdict">—</p>
     <div class="tokens" id="l1-tokens"></div>
     <p class="score-line" id="l1-score"></p>
-    <p class="note" style="margin-top:12px"><span id="l1-method">方法：① 用瀏覽器內建的中文斷詞（Intl.Segmenter）把句子切成詞（底線就是切出來的詞）；② 每個詞拿去查情緒詞典，正面詞 +1、負面詞 −1；③ 加總，大於 0 判正面、小於 0 判負面、等於 0 判中性。</span><span id="l1-dictnote">這裡用的是教學用的簡化字典，實務上常用 NTUSD（台大情緒詞典）等正式詞典。</span> <a href="#ref" style="color:var(--lime)">方法與出處</a></p>
+    <p class="note" style="margin-top:12px"><span id="l1-method">方法：① 用瀏覽器內建的中文斷詞（Intl.Segmenter）把句子切成詞（底線就是切出來的詞）；② 每個詞拿去查情緒詞典，正面詞 +1、負面詞 −1；③ 加總，大於 0 判正面、小於 0 判負面、等於 0 判中性。</span><span id="l1-dictnote">這裡用的是 NTUSD（台大情緒詞典）。</span> <a href="#ref" style="color:var(--lime)">方法與出處</a></p>
   </div>
 
   <div class="truth hide-present">
-    <p style="font-weight:700">你覺得這句話的正確答案是？</p>
+    <p style="font-weight:700">你覺得這句話的情緒是？</p>
     <div class="seg" id="l1-truth">
       <button class="pos" data-v="pos" aria-pressed="false">正面</button>
       <button class="neu" data-v="neu" aria-pressed="false">中性</button>
