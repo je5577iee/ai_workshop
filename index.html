@@ -3,12 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>文字讀心術 Lab</title>
+<title>AI Workshop - AI 的文字讀心術 Lab</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap">
 <style>
 :root {
-  /* 配色跟簡報一致：深藍底、琥珀＝正面／重點、粉紅＝負面、藍＝次要重點 */
   --bg: #161C2B; --bg-deep: #10141F; --surface: #1F2739; --surface-2: #28324A; --line: #34405C;
   --fg: #F2F4F8; --muted: #9CA5BA; --lime: #F5B54F; --ink: #161C2B; --coral: #FF6680; --neu: #9CA5BA;
   --blue: #7FB2FF; --blue-strong: #2F7BEA; --radius: 10px;
@@ -109,7 +108,7 @@ textarea:focus, input[type=text]:focus { border-color: var(--lime); outline: non
 .board .lbls { display: flex; gap: 6px; align-items: center; font-family: var(--font-mono); font-size: 12px; color: var(--muted); flex-wrap: wrap; justify-content: flex-end; }
 .board .empty { color: var(--muted); grid-template-columns: 1fr; }
 
-/* 投影模式：只顯示排行榜，字放大 */
+/* 投影模式 */
 body.present header.top, body.present .hide-present { display: none !important; }
 body.present .panel { padding-top: 32px; }
 body.present .board .sent { font-size: clamp(22px, 2.6vw, 34px); }
@@ -209,7 +208,7 @@ table.l3-rows td { border-top: 1px solid var(--line); padding: 8px 6px; vertical
 }
 @media (prefers-reduced-motion: reduce) { .bar-fill { transition: none; } }
 
-/* ===== 簡報風格：圓角卡片、藍色主按鈕 ===== */
+/* 簡報風格 */
 header.top { background: rgba(22, 28, 43, 0.92); backdrop-filter: blur(8px); }
 .tab { border-radius: 999px; }
 .btn { background: var(--blue-strong); border-color: var(--blue-strong); color: #fff; border-radius: var(--radius); }
@@ -257,7 +256,7 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
       <button class="tab" role="tab" id="tab-lab1" aria-controls="lab1" data-target="lab1"><span class="n">01</span>騙過字典</button>
       <button class="tab" role="tab" id="tab-lab2" aria-controls="lab2" data-target="lab2"><span class="n">02</span>主題分類</button>
       <button class="tab" role="tab" id="tab-lab3" aria-controls="lab3" data-target="lab3"><span class="n">03</span>完整流程</button>
-      <button class="tab" role="tab" id="tab-feedback" aria-controls="feedback" data-target="feedback"><span class="n">04</span>回饋</button>
+      <button class="tab" role="tab" id="tab-feedback" aria-controls="feedback" data-target="feedback"><span class="n">04</span>課程回饋</button>
       <button class="tab" role="tab" id="tab-ref" aria-controls="ref" data-target="ref"><span class="n">05</span>參考資料</button>
     </nav>
   </div>
@@ -265,7 +264,7 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
 
 <main class="wrap">
 
-<!-- ===================== LAB 1 ===================== -->
+<!--  LAB 1  -->
 <section class="panel" id="lab1" role="tabpanel" aria-labelledby="tab-lab1">
   <div class="panel-head hide-present">
     <p class="eyebrow">Lab 01 · 25 min</p>
@@ -274,15 +273,9 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
   </div>
 
   <div class="section hide-present">
-    <textarea id="l1-input" rows="2" maxlength="60" aria-label="輸入評論">推！推薦給我討厭的人。</textarea>
+    <textarea id="l1-input" rows="2" maxlength="60" aria-label="輸入評論">還不錯。</textarea>
     <div class="row">
       <button class="btn" id="l1-run">讓字典判斷</button>
-      <span class="muted" style="font-size:14px">提示：</span>
-      <div class="chips">
-        <span class="chip" style="cursor:default">反諷</span><span class="chip" style="cursor:default">否定句</span>
-        <span class="chip" style="cursor:default">網路用語</span><span class="chip" style="cursor:default">表情符號</span>
-        <span class="chip" style="cursor:default">先誇後罵</span>
-      </div>
     </div>
   </div>
 
@@ -317,7 +310,7 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
   </div>
 </section>
 
-<!-- ===================== LAB 2 ===================== -->
+<!-- LAB 2  -->
 <section class="panel" id="lab2" role="tabpanel" aria-labelledby="tab-lab2" hidden>
   <div class="panel-head">
     <p class="eyebrow">Lab 02 · 15 min</p>
@@ -356,7 +349,7 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
   </div>
 </section>
 
-<!-- ===================== LAB 3 ===================== -->
+<!-- LAB 3  -->
 <section class="panel" id="lab3" role="tabpanel" aria-labelledby="tab-lab3" hidden>
   <div class="panel-head">
     <p class="eyebrow">Lab 03 · 20 min · 小組實戰</p>
@@ -367,10 +360,10 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
   <div class="steps">
     <div class="step"><p class="sn">01</p><div class="step-body">
       <h3>選角色，寫下問題</h3>
-      <p class="muted">先決定你要回答什麼，再去看資料。好問題 = 對象 + 面向 + 目的</p>
+      <p class="muted">先決定你要回答什麼，再去看資料。</p>
       <div class="ds" id="l3-ds" role="group" aria-label="選擇角色"></div>
       <p class="scenario" id="l3-scenario"></p>
-      <input type="text" id="l3-q" maxlength="80" placeholder="你們的問題，例如：哪一類的抱怨最多？">
+      <input type="text" id="l3-q" maxlength="80" placeholder="你們的問題，例如：最近一個月內，什麼樣的抱怨最多？">
       <div class="row"><button class="btn" id="l3-get">拿到資料</button><span class="status" id="l3-get-msg"></span></div>
     </div></div>
 
@@ -442,7 +435,7 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
   </div>
 </section>
 
-<!-- ===================== FEEDBACK ===================== -->
+<!--  FEEDBACK  -->
 <section class="panel" id="feedback" role="tabpanel" aria-labelledby="tab-feedback" hidden>
   <div class="panel-head">
     <p class="eyebrow">Feedback · 5 min</p>
@@ -507,7 +500,7 @@ textarea:focus, input[type=text]:focus, select:focus { border-color: var(--blue)
     <p class="err" id="fb-err" role="alert"></p>
     <div class="row"><button class="btn" type="submit" id="fb-submit">送出回饋</button></div>
   </form>
-  <div class="done" id="fb-done" hidden><p>收到了，謝謝你！</p><p class="muted">你的回饋已經送出。</p></div>
+  <div class="done" id="fb-done" hidden><p>謝謝你今天撥空來參加AI工作坊，期待下一次再看到你！</p><p class="muted">你的回饋已經送出。</p></div>
 </section>
 
 <section class="panel" id="ref" role="tabpanel" aria-labelledby="tab-ref" hidden>
@@ -577,23 +570,20 @@ SOFTWARE.</pre>
    設定：二選一，填好其中一種後端就好（兩種都填，優先用 Supabase）
    ===================================================== */
 const CONFIG = {
-  // 方案 A：Google Apps Script 網址
-  API_URL: '',              // 例如 'https://script.google.com/macros/s/xxxx/exec'
+  
 
-  // 方案 B：Supabase（Project URL 與 Publishable / anon key）
+  // Supabase（Project URL 與 Publishable / anon key）
   SUPABASE_URL: 'https://icabwtopdpbfrxuqsple.supabase.co',         // 例如 'https://abcdefgh.supabase.co'
   SUPABASE_KEY: 'sb_publishable_M2zzBSzO0oXLcGyHDbZ6Qg_NapugbWp',         // 例如 'sb_publishable_xxxx'（這把是公開用的，可以放在網頁裡）
 
   BOARD_REFRESH_MS: 8000,   // 排行榜幾毫秒更新一次
 
-  // NTUSD 情緒詞典（選用）：把兩個檔案放在跟 index.html 同一個資料夾就會自動載入
-  // 找不到檔案就只用下面的示範字典。不想用時，把兩個檔名改成 '' 即可。
   NTUSD_POS: 'ntusd-positive.txt',
   NTUSD_NEG: 'ntusd-negative.txt'
 };
 const BACKEND = (CONFIG.SUPABASE_URL && CONFIG.SUPABASE_KEY) ? 'supabase' : (CONFIG.API_URL ? 'google' : '');
 
-/* ===== 示範字典（可替換成 NTUSD / CVAW） ===== */
+/* 示範字典（可替換成 NTUSD / CVAW）*/
 const LEXICON = {
   '好吃': 1, '好喝': 1, '美味': 1, '好棒棒': 1, '棒': 1, '讚': 1, '推薦': 1, '推': 1,
   '喜歡': 1, '親切': 1, '熱情': 1, '便宜': 1, '佛心': 1, '特色': 1, '努力': 1,
@@ -610,13 +600,12 @@ async function loadWordList(file) {
     const res = await fetch(file, { cache: 'no-cache' });
     if (!res.ok) return [];
     const text = decodeBest(new Uint8Array(await res.arrayBuffer()));
-    // 一行一個詞；如果一行裡還有分數等欄位，只取第一欄
     return text.split(/\r?\n/)
       .map(s => s.replace(/[\uFEFF\u200B-\u200D]/g, '').trim().split(/[\s,\t]+/)[0])
       .filter(Boolean);
   } catch (e) { return []; }
 }
-/* 自動判斷檔案編碼：UTF-8、UTF-16、Big5（舊版繁體常見）、GB18030（簡體） */
+/* 自動判斷檔案編碼：UTF-8、UTF-16、Big5（舊版繁體常見） */
 function decodeBest(buf) {
   if (buf[0] === 0xFF && buf[1] === 0xFE) return new TextDecoder('utf-16le').decode(buf);
   if (buf[0] === 0xFE && buf[1] === 0xFF) return new TextDecoder('utf-16be').decode(buf);
@@ -685,7 +674,7 @@ const store = {
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 };
 
-/* ===== 後端呼叫（Google / Supabase 共用同一組介面） ===== */
+/* 後端呼叫（Google / Supabase 共用同一組介面） */
 function sbHeaders(extra) {
   const h = { apikey: CONFIG.SUPABASE_KEY, 'Content-Type': 'application/json', ...extra };
   if (!CONFIG.SUPABASE_KEY.startsWith('sb_')) h.Authorization = 'Bearer ' + CONFIG.SUPABASE_KEY; // 舊版 anon key
@@ -727,7 +716,7 @@ async function apiGetBoard() {
   throw new Error('no-backend');
 }
 
-/* ===== Tabs ===== */
+/*  Tabs */
 const TABS = ['lab1', 'lab2', 'lab3', 'feedback', 'ref'];
 function showTab(id) {
   if (!TABS.includes(id)) id = 'lab1';
@@ -742,7 +731,7 @@ document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () =>
 showTab((location.hash || '').slice(1));
 window.addEventListener('hashchange', () => { showTab(location.hash.slice(1)); window.scrollTo({ top: 0 }); });
 
-/* ===================== LAB 1 ===================== */
+/*  LAB 1 */
 let l1 = { text: '', dict: null, truth: null };
 let board = [];
 let lastSubmit = 0;
@@ -835,10 +824,9 @@ runLab1();
 refreshBoard();
 setInterval(() => { if (!$('lab1').hidden) refreshBoard(); }, CONFIG.BOARD_REFRESH_MS);
 
-/* ===================== LAB 2 ===================== */
+/*  LAB 2  */
 /* AI 結果：事先由 Claude 分析，主題由 AI 自行歸納 */
-/* 上機二資料：Google 地圖多家麥當勞分店的公開評論（已移除留言者資訊）。
-   每筆：[評論, [AI 標的主題（一則可以有好幾個）]]；AI 結果由 Claude 事先分析 */
+
 const L2 = [
   ['不知道是員工訓練不到位還是一直都是同一批員工', ['服務態度']],
   ['不大間，但很多座位，整間店面都很乾淨，出餐速度極快。', ['用餐環境', '出餐狀況']],
@@ -919,12 +907,9 @@ $('l2-reveal').addEventListener('click', () => {
 });
 renderTopics(); renderRows();
 
-/* ===================== LAB 3 ===================== */
+/*  LAB 3  */
 const P = 'pos', U = 'neu', N = 'neg';
-/* 三份資料，AI 結果事先由 Claude 分析。
-   每筆：[評論, AI 整體情感, [[主題, 這個主題的情感], ...], 星等（null = 教學用資料，沒有星等）]
-   一則評論可以提到好幾個主題，每個主題各自有正負面（面向情感分析）。
-   主題寫「其他」代表沒有提到具體主題。 */
+/* 三份資料，AI 結果事先由 Claude 分析。 */
 const DATASETS = {
   hotel: {
     name: '飯店經理',
@@ -1204,7 +1189,7 @@ function renderDrill() {
 $('l3-run').addEventListener('click', runLab3);
 renderRoles();
 
-/* ===================== FEEDBACK ===================== */
+/* FEEDBACK */
 let fbRating = 0;
 document.querySelectorAll('#fb-rating button').forEach(b => b.addEventListener('click', () => {
   fbRating = +b.dataset.v;
